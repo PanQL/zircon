@@ -1,0 +1,9 @@
+forward_variables_from({
+                         default_deps = [ ":legacy-x64" ]
+                         enable_kernel_debugging_features = true
+                         enable_netsvc_debugging_features = true
+                         goma_dir = "/home/pan/goma"
+                         use_goma = false
+                         variants = []
+                       },
+                       "*")
