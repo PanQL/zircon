@@ -632,26 +632,7 @@ build_api_module("fidl_gen") {
   ]
 }
 
-# TODO(TC-303): ids.txt is deprecated and will be removed.
 if (current_toolchain == default_toolchain) {
-  action("ids") {
-    testonly = true
-    outputs = [
-      "$root_build_dir/ids.txt",
-    ]
-    deps = []
-    sources = []
-    foreach(cpu, standard_fuchsia_cpus) {
-      deps += [ ":ids-$cpu" ]
-      sources += [ "$root_build_dir/ids-$cpu.txt" ]
-    }
-    script = "/usr/bin/sort"
-    args = [
-             "-u",
-             "-o",
-           ] + rebase_path(outputs + sources, root_build_dir)
-  }
-
   foreach(cpu, standard_fuchsia_cpus) {
     environment_redirect("ids-$cpu") {
       testonly = true
