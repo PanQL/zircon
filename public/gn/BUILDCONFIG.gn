@@ -35,9 +35,10 @@ set_default_toolchain(toolchain.label)
 # defined by environment().
 
 # The toolchain can specify pervasive globals.
-forward_variables_from(toolchain.globals, "*")
+forward_variables_from(toolchain.globals, "*")  # 可以在外部定义toolchain来覆盖当前设置并引入全局变量。
 
 # This is the name for $current_cpu that's used in Zircon file names.
+# 根据当前cpu的类型，设置zircon_cpu,用于之后对编译架构进行区分。（x86_64设定为x64,所以在这里做了区分)
 if (current_cpu == "x64") {
   zircon_cpu = "x86"
 } else if (current_cpu != "") {
@@ -51,7 +52,7 @@ host_platform = "${host_os}-${host_cpu}"
 # Shorthand for `current_os == "fuchsia"`.
 is_fuchsia = current_os == "fuchsia"
 
-if (!defined(is_gcc)) {
+if (!defined(is_gcc)) { # 检查当前工具链是否使用gcc替代clang
   # True iff $current_toolchain builds with GCC rather than Clang.
   is_gcc = false
 }
@@ -85,7 +86,7 @@ template("_shlib_toolchain_target") {
   target(invoker.target_type, target_name) {
     # visibility and data_deps get special treatment in ${toolchain.shlib}.
     if (defined(toolchain.shlib)) {
-      if (defined(invoker.visibility)) {
+      if (defined(invoker.visibility)) {  # 继承调用者的可见性
         # Make sure we're visible to the redirector groups defined below.
         visibility = invoker.visibility + [ ":$target_name" ]
       }

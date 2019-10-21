@@ -29,11 +29,13 @@
 #     - Type: path
 #     - Default: "$root_build_dir/$target_name"
 #
-template("copied_files_dir") {
-  main_target = target_name
+template("copied_files_dir") {  # 声明一个名为copied_files_dir的template
+  main_target = target_name # 来自调用者scope的target名称
   rspfile_target = "_copy_files.$main_target.rsp"
   rspfile = "$target_gen_dir/$main_target.rsp"
 
+  # 调用内置函数：
+  #     将读取调用者scope中的deps列表，遍历列表并深度搜索所有相关以来项，收集其中的date_keys对应的value,整合并输出成一个名为rspfile的`list line`文件。
   generated_file(rspfile_target) {
     forward_variables_from(invoker, [ "testonly" ])
     visibility = [ ":$main_target" ]
@@ -45,6 +47,7 @@ template("copied_files_dir") {
     forward_variables_from(invoker, [ "deps" ])
   }
 
+  # 每次调用这个名为main_target的action时，执行一次script脚本，
   action(main_target) {
     forward_variables_from(invoker,
                            [
@@ -54,7 +57,7 @@ template("copied_files_dir") {
                              "visibility",
                            ])
     deps = [
-      ":$rspfile_target",
+      ":$rspfile_target", # 先生成rspfile,然后才能执行该命令
     ]
     script = "$zx/public/gn/copied_files_dir.sh"
     depfile = "$target_out_dir/$target_name.d"

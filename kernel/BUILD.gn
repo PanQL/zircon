@@ -245,6 +245,7 @@ if (current_toolchain == default_toolchain) {
     }
   }
 
+  # 将:zircon生成的zircon.elf的相关信息写入到zircon.elf.rsp
   zircon_elf_rspfile = "$target_gen_dir/zircon.elf.rsp"
   link_output_rspfile("zircon.elf.rsp") {
     visibility = [ ":*" ]
@@ -260,7 +261,7 @@ if (current_toolchain == default_toolchain) {
   image_defines = [ "BOOT_HEADER_SIZE=0x50" ]
 
   # This supplies those variables for use in linker scripts.
-  config("kernel_defsym") {
+  config("kernel_defsym") { # 定义链接过程中需要的一些参数，如KERNEL_BASE
     visibility = [ ":*" ]
     ldflags = []
     foreach(assignment, kernel_defines + image_defines) {
