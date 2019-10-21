@@ -1,0 +1,45 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("fvm") {
+  host = true
+  sources = [
+    "format.cc",
+    "fvm-check.cc",
+    "fvm.cc",
+    "sparse-reader.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/digest",
+    "$zx/system/ulib/fbl",
+    "$zx/third_party/ulib/lz4",
+    "$zx/third_party/ulib/uboringssl",
+  ]
+  public_deps = [
+    # <fvm/fvm.h> has #include <digest/digest.h>.
+    "$zx/system/ulib/digest:headers",
+
+    # <fvm/fvm.h> has #include <gpt/gpt.h>.
+    "$zx/system/ulib/gpt:headers",
+
+    # <fvm/sparse-reader.h> has #include <lz4/lz4frame.h>.
+    "$zx/third_party/ulib/lz4:headers",
+  ]
+  if (is_fuchsia) {
+    sources += [ "client.cc" ]
+
+    deps += [
+      "$zx/system/fidl/fuchsia-hardware-block-volume:c",
+      "$zx/system/ulib/block-client",
+      "$zx/system/ulib/fzl",
+      "$zx/system/ulib/gpt",
+      "$zx/system/ulib/sync",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zx",
+    ]
+  } else {
+    # fvm-check.cpp has #include <zircon/status.h> even when built for host.
+    deps += [ "$zx/system/ulib/zircon:headers" ]
+  }
+}

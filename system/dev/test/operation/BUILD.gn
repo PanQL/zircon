@@ -1,0 +1,21 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+test("operation") {
+  sources = [
+    "operation-list-test.cc",
+    "operation-pool-test.cc",
+    "operation-queue-test.cc",
+    "operation-test.cc",
+  ]
+  deps = [
+    "$zx/system/dev/lib/fake_ddk",
+    "$zx/system/dev/lib/operation",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+  ]
+}

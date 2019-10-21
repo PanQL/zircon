@@ -1,0 +1,57 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("$zx/public/gn/firmware.gni")
+
+driver("optee") {
+  sources = [
+    "optee-client.cc",
+    "optee-controller.cc",
+    "optee-message.cc",
+    "shared-memory.cc",
+    "util.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/dev/lib/device-protocol-platform-device",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/fidl/fuchsia-hardware-tee:c",
+    "$zx/system/fidl/fuchsia-tee-manager:c",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/fidl-utils",
+    "$zx/system/ulib/fit",
+    "$zx/system/ulib/region-alloc",
+    "$zx/system/ulib/tee-client-api",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zx",
+  ]
+  data_deps = [
+    ":keysafe_ta",
+    ":secmem_ta",
+  ]
+
+  # TODO(ZX-2863): This driver violates the allowed shlib deps policy.
+  deprecated_inhibit_driver_shlib_allowlist = true
+}
+
+firmware("keysafe_ta") {
+  sources = [
+    "$firmware_dir/optee/keysafe/808032e0-fd9e-4e6f-8896-544735c98480.ta.dev",
+  ]
+  outputs = [
+    "808032e0-fd9e-4e6f-8896-544735c98480.ta",
+  ]
+}
+
+firmware("secmem_ta") {
+  sources = [
+    "$firmware_dir/optee/secmem/2c1a33c0-44cc-11e5-bc3b-0002a5d5c51b.ta.dev",
+  ]
+  outputs = [
+    "2c1a33c0-44cc-11e5-bc3b-0002a5d5c51b.ta",
+  ]
+}

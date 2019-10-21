@@ -1,0 +1,10 @@
+Source: https://chromium.googlesource.com/chromium/src/+/refs/heads/master/base/numerics/
+Git Commit: 76d7706c0a10309143a461eff56ab9201505b81f
+License File: LICENSE
+
+Modifications:
+
+Updated using do-updates.sh, which performs trivial renames (namespace, header
+guards, etc.) and generates an appropriate BUILD.gn file.
+
+Upstream changes should be preferred and mirrored here.

@@ -1,0 +1,25 @@
+// Copyright 2018 The Fuchsia Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+library ddk.protocol.acpi;
+
+using zx;
+
+struct AcpiMmio {
+    /// Offset from beginning of VMO where the mmio region begins.
+    zx.off offset;
+    /// Size of mmio region.
+    usize size;
+    handle<vmo> vmo;
+};
+
+[Layout = "ddk-protocol"]
+protocol Acpi {
+    GetPio(uint32 index) -> (zx.status s, handle<resource> pio);
+    GetMmio(uint32 index) -> (zx.status s, AcpiMmio mmio);
+    MapInterrupt(int64 index) -> (zx.status s, handle<interrupt> @handle);
+    GetBti(uint32 bdf, uint32 index) -> (zx.status s, handle<bti> bti);
+    ConnectSysmem(handle<channel> connection) -> (zx.status s);
+    RegisterSysmemHeap(uint64 heap, handle<channel> connection) -> (zx.status s);
+};

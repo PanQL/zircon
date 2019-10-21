@@ -1,0 +1,136 @@
+# Copyright 2017 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (defined(zx)) {
+  library("fidl") {
+    host = true
+    sources = [
+      "lib/attributes.cc",
+      "lib/c_generator.cc",
+      "lib/coded_types_generator.cc",
+      "lib/error_reporter.cc",
+      "lib/findings_json.cc",
+      "lib/flat_ast.cc",
+      "lib/formatter.cc",
+      "lib/json_generator.cc",
+      "lib/lexer.cc",
+      "lib/library_zx.cc",
+      "lib/linter.cc",
+      "lib/linting_tree_callbacks.cc",
+      "lib/names.cc",
+      "lib/ordinals.cc",
+      "lib/parser.cc",
+      "lib/raw_ast.cc",
+      "lib/source_file.cc",
+      "lib/source_location.cc",
+      "lib/source_manager.cc",
+      "lib/tables_generator.cc",
+      "lib/template_string.cc",
+      "lib/tree_visitor.cc",
+      "lib/utils.cc",
+      "lib/virtual_source_file.cc",
+    ]
+    public_deps = [
+      "$zx/system/ulib/cmdline:headers",
+      "$zx/system/ulib/fit:headers",
+    ]
+    deps = [
+      ":json_schema",
+      "$zx/system/ulib/cmdline",
+      "$zx/system/ulib/fit",
+      "$zx/third_party/ulib/uboringssl",
+    ]
+  }
+
+  source_set("json_schema") {
+    visibility = [ ":*" ]
+    sources = [
+      "$target_gen_dir/json_schema.cc",
+    ]
+    deps = [
+      ":gen-json-schema",
+      ":headers",
+    ]
+  }
+
+  action("gen-json-schema") {
+    visibility = [ ":json_schema" ]
+    outputs = [
+      "$target_gen_dir/json_schema.cc",
+    ]
+    sources = [
+      "schema.json",
+    ]
+    script = "gen-json-schema.sh"
+    args = rebase_path(outputs, root_build_dir) +
+           rebase_path(sources, root_build_dir)
+  }
+
+  group("tools") {
+    deps = [
+      ":fidl-format",
+      ":fidl-lint",
+      ":fidlc",
+    ]
+  }
+
+  host_tool("fidlc") {
+    sources = [
+      "compiler/main.cc",
+    ]
+    deps = [
+      ":fidl",
+    ]
+  }
+
+  host_tool("fidl-format") {
+    sources = [
+      "formatter/main.cc",
+    ]
+    deps = [
+      ":fidl",
+    ]
+  }
+
+  host_tool("fidl-lint") {
+    sources = [
+      "linter/command_line_options.cc",
+      "linter/main.cc",
+    ]
+    deps = [
+      ":fidl",
+    ]
+  }
+} else {
+  # TODO(BLD-353): Referenced by //garnet/public/lib/fidl/fuzz:compiler.
+
+  config("fidl_config") {
+    visibility = [ ":*" ]
+    include_dirs = [ "include" ]
+  }
+
+  source_set("compiler") {
+    public_configs = [ ":fidl_config" ]
+    sources = [
+      "lib/attributes.cc",
+      "lib/c_generator.cc",
+      "lib/error_reporter.cc",
+      "lib/findings_json.cc",
+      "lib/flat_ast.cc",
+      "lib/formatter.cc",
+      "lib/json_generator.cc",
+      "lib/lexer.cc",
+      "lib/library_zx.cc",
+      "lib/linter.cc",
+      "lib/names.cc",
+      "lib/parser.cc",
+      "lib/raw_ast.cc",
+      "lib/source_file.cc",
+      "lib/source_location.cc",
+      "lib/source_manager.cc",
+      "lib/tables_generator.cc",
+      "lib/tree_visitor.cc",
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("sysmem-connector") {
+  sdk = "source"
+  sdk_headers = [ "lib/sysmem-connector/sysmem-connector.h" ]
+  sources = [
+    "sysmem-connector.cc",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  deps = [
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/zx",
+  ]
+}

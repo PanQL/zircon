@@ -1,0 +1,26 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/kernel/params.gni")
+
+executable("kstress") {
+  sources = [
+    "main.cc",
+    "stress_test.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-sysinfo:c",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+
+  # The vmstress test has starvation issues when run without the fair scheduler.
+  if (enable_fair_scheduler) {
+    sources += ["vmstress.cc"]
+  } else {
+    defines = [ "DISABLE_VMSTRESS" ]
+  }
+}

@@ -1,0 +1,78 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+  deps = [
+    ":blobfs-integration",
+    ":blobfs-unit",
+  ]
+}
+
+test("blobfs-unit") {
+  test_group = "fs"
+  sources = [
+    "allocated-extent-iterator-test.cc",
+    "allocator-test.cc",
+    "background-executor-test.cc",
+    "blob-cache-test.cc",
+    "compressor-test.cc",
+    "create-tests.cc",
+    "extent-reserver-test.cc",
+    "format-test.cc",
+    "get-allocated-regions-test.cc",
+    "journal-test.cc",
+    "node-populator-test.cc",
+    "node-reserver-test.cc",
+    "ring-buffer-test.cc",
+    "unbuffered-operations-builder-test.cc",
+    "utils.cc",
+    "vector-extent-iterator-test.cc",
+    "vmo-buffer-test.cc",
+    "vmo-buffer-view-test.cc",
+    "writeback-test.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/async-loop",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/blobfs",
+    "$zx/system/ulib/block-client:fake-device",
+    "$zx/system/ulib/fidl-utils",
+    "$zx/system/ulib/zxtest",
+    "$zx/third_party/ulib/safemath",
+  ]
+}
+
+test("blobfs-host") {
+  sources = [
+    "host-test.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/blobfs",
+    "$zx/system/ulib/zxtest",
+  ]
+}
+
+test("blobfs-integration") {
+  test_group = "fs"
+  sources = [
+    "integration/blobfs_integration_test.cc",
+    "integration/blobfs_test.cc",
+    "integration/environment.cc",
+    "integration/integration_main.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-device:c",
+    "$zx/system/fidl/fuchsia-hardware-block:c",
+    "$zx/system/fidl/fuchsia-io:c",
+    "$zx/system/ulib/async-loop",
+    "$zx/system/ulib/blobfs",
+    "$zx/system/ulib/fs-management",
+    "$zx/system/ulib/fs-test-utils",
+    "$zx/system/ulib/fvm",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/memfs",
+    "$zx/system/ulib/zxtest",
+  ]
+}

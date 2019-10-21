@@ -1,0 +1,93 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("mt8167s_ref") {
+  sources = [
+    "mt8167-audio.cc",
+    "mt8167-backlight.cc",
+    "mt8167-buttons.cc",
+    "mt8167-clk.cc",
+    "mt8167-display.cc",
+    "mt8167-gpio.cc",
+    "mt8167-gpu.cc",
+    "mt8167-i2c.cc",
+    "mt8167-msdc0.cc",
+    "mt8167-msdc2.cc",
+    "mt8167-power.cc",
+    "mt8167-soc.cc",
+    "mt8167-sysmem.cc",
+    "mt8167-thermal.cc",
+    "mt8167-touch.cc",
+    "mt8167-usb.cc",
+    "mt8167.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.clockimpl",
+    "$zx/system/banjo/ddk.protocol.gpio",
+    "$zx/system/banjo/ddk.protocol.gpioimpl",
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.powerimpl",
+    "$zx/system/banjo/ddk.protocol.scpi",
+    "$zx/system/dev/lib/focaltech",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/dev/lib/mt8167",
+    "$zx/system/fidl/fuchsia-hardware-thermal:c",
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/hwreg",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+  data_deps = [
+    "$zx/kernel/target/arm64/boot-shim:cleo",
+    "$zx/kernel/target/arm64/boot-shim:mt8167s_ref",
+  ]
+}
+
+test("mt8167s_ref-test") {
+  output_name = "mt8167s_ref-test"
+  sources = [
+    "mt8167-audio.cc",
+    "mt8167-backlight.cc",
+    "mt8167-buttons.cc",
+    "mt8167-clk.cc",
+    "mt8167-display.cc",
+    "mt8167-gpio.cc",
+    "mt8167-gpu.cc",
+    "mt8167-i2c.cc",
+    "mt8167-msdc0.cc",
+    "mt8167-msdc2.cc",
+    "mt8167-power.cc",
+    "mt8167-soc.cc",
+    "mt8167-sysmem.cc",
+    "mt8167-test.cc",
+    "mt8167-thermal.cc",
+    "mt8167-touch.cc",
+    "mt8167-usb.cc",
+    "mt8167.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.clockimpl",
+    "$zx/system/banjo/ddk.protocol.gpioimpl",
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.powerimpl",
+    "$zx/system/dev/lib/focaltech",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/dev/lib/mt8167",
+    "$zx/system/fidl/fuchsia-hardware-thermal:c",
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/driver",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/hwreg",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/system/ulib/zxtest",
+  ]
+}

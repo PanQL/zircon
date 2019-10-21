@@ -1,0 +1,30 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("as370") {
+  sources = [
+    "as370-audio.cc",
+    "as370-clock.cc",
+    "as370-gpio.cc",
+    "as370-i2c.cc",
+    "as370-usb.cc",
+    "as370.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.gpioimpl",
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/dev/lib/as370",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/dev/lib/usb",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/hwreg",
+    "$zx/system/ulib/zx",
+  ]
+  data_deps = [
+    "$zx/kernel/target/arm64/boot-shim:as370",
+    "$zx/kernel/target/arm64/boot-shim:visalia",
+  ]
+}

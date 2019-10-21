@@ -1,0 +1,60 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/kernel/params.gni")
+
+source_set("kernel") {
+  sources = [
+    "brwlock.cc",
+    "cmdline.cc",
+    "deadline.cc",
+    "debug.cc",
+    "dpc.cc",
+    "event.cc",
+    "init.cc",
+    "mp.cc",
+    "mutex.cc",
+    "owned_wait_queue.cc",
+    "percpu.cc",
+    "semaphore.cc",
+    "thread.cc",
+    "timer.cc",
+    "wait.cc",
+  ]
+
+  if (enable_fair_scheduler) {
+    sources += [ "fair_scheduler.cc" ]
+  } else {
+    sources += [ "sched.cc" ]
+  }
+
+  deps = [
+    ":tests",
+    "$zx/kernel/dev/interrupt",
+    "$zx/kernel/lib/console",
+    "$zx/kernel/lib/counters",
+    "$zx/kernel/lib/fbl",
+    "$zx/kernel/lib/heap",
+    "$zx/kernel/lib/libc",
+    "$zx/kernel/lib/topology",
+    "$zx/kernel/lib/version",
+    "$zx/kernel/object",
+    "$zx/kernel/vm",
+    "$zx/system/ulib/explicit-memory",
+    "$zx/system/ulib/zircon-internal",
+  ]
+}
+
+source_set("tests") {
+  # TODO: testonly = true
+  sources = [
+    "mutex_tests.cc",
+    "semaphore_tests.cc",
+    "thread_test.cc",
+  ]
+  deps = [
+    "$zx/kernel/lib/console",
+    "$zx/kernel/lib/unittest",
+  ]
+}

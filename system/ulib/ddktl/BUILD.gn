@@ -1,0 +1,52 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("ddktl") {
+  sdk = "static"
+  sdk_publishable = true
+  sdk_headers = [
+    "ddktl/device-internal.h",
+    "ddktl/device.h",
+  ]
+  sources = []
+  public_deps = [
+    # <ddktl/device-internal.h> has #include <fbl/macros.h>.
+    "$zx/system/ulib/fbl:headers",
+
+    # <ddktl/protocol/display-controller.h> has #include <lib/zx/vmo.h>.
+    "$zx/system/ulib/zx:headers",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  deps = [
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+test_driver("ddktl-test") {
+  sources = [
+    "test/ddktl-test-binding.c",
+    "test/ddktl-test.cc",
+    "test/device-tests.cc",
+    "test/ethernet-tests.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.ethernet",
+    "$zx/system/banjo/ddk.protocol.test",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+
+  # TODO(ZX-2863): This driver violates the allowed shlib deps policy.
+  deprecated_inhibit_driver_shlib_allowlist = true
+}

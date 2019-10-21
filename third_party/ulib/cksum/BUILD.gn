@@ -1,0 +1,22 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("cksum") {
+  kernel = true
+  static = true
+  host = true
+
+  sdk = "source"
+  sdk_headers = [
+    "lib/cksum.h",
+  ]
+
+  sources = [
+    "adler32.c",
+    "crc16.c",
+    "crc32.c",
+  ]
+
+  cflags = [ "-Wno-strict-prototypes" ]
+}

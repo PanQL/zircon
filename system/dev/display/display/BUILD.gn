@@ -1,0 +1,49 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("display") {
+  deps = [
+    ":shared",
+  ]
+
+  # TODO(ZX-2863): This driver violates the allowed shlib deps policy.
+  deprecated_inhibit_driver_shlib_allowlist = true
+}
+
+# Also used by test/.
+source_set("shared") {
+  visibility = [ "./*" ]
+  sources = [
+    "client.cc",
+    "controller.cc",
+    "fence.cc",
+    "image.cc",
+  ]
+  public_deps = [
+    "$zx/system/banjo/ddk.protocol.display.controller",
+    "$zx/system/banjo/ddk.protocol.i2cimpl",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/fidl/fuchsia-hardware-display:c",
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/audio-proto-utils",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/edid",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/fidl-utils",
+    "$zx/system/ulib/hwreg",
+    "$zx/system/ulib/image-format",
+    "$zx/system/ulib/trace:trace-driver",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+
+    # TODO(BLD-353): This is actually a transitive dependency of the ddk
+    # library, but the library doesn't express it properly because of
+    # legacy complications.
+    "$zx/system/ulib/trace:headers",
+  ]
+}

@@ -1,0 +1,33 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+  deps = [
+    ":async",
+  ]
+}
+
+test("async") {
+  sources = [
+    "default_tests.cc",
+    "exception_tests.cc",
+    "receiver_tests.cc",
+    "task_tests.cc",
+    "time_tests.cc",
+    "trap_tests.cc",
+    "wait_tests.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async:async-default",
+    "$zx/system/ulib/async-testing",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}

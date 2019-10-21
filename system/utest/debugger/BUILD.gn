@@ -1,0 +1,37 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+test("debugger") {
+  sources = [
+    "crash-and-recover.cc",
+    "crash-and-recover.h",
+    "debugger.cc",
+    "debugger.h",
+    "hw-breakpoint-test.cc",
+    "inferior-control.cc",
+    "inferior-control.h",
+    "inferior.cc",
+    "inferior.h",
+    "main.cc",
+    "start-thread-reg-access.cc",
+    "suspend-on-start.cc",
+    "suspended-reg-access.cc",
+    "utils.cc",
+    "utils.h",
+    "watchpoint-test.cc",
+  ]
+
+  deps = [
+    "$zx/system/ulib/backtrace-request",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/launchpad",
+    "$zx/system/ulib/pretty",
+    "$zx/system/ulib/runtime",
+    "$zx/system/ulib/test-utils",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zx",
+  ]
+}

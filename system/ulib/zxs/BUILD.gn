@@ -1,0 +1,24 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("zxs") {
+  sdk = "static"
+  sdk_headers = [
+    "lib/zxs/protocol.h",
+    "lib/zxs/zxs.h",
+  ]
+  sources = [
+    "zxs.cc",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  public_deps = [
+    # <lib/zxs/zxs.h> has #include <fuchsia/posix/socket/llcpp/fidl.h>.
+    "$zx/system/fidl/fuchsia-posix-socket:llcpp.headers",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-posix-socket:llcpp",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}

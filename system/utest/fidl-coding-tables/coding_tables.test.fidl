@@ -1,0 +1,75 @@
+// Copyright 2019 The Fuchsia Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+library fidl.test.example.codingtables;
+
+struct SomeStruct {
+    bool foo;
+    int32 bar;
+};
+
+xunion MyXUnion {
+    bool foo;
+    int32 bar;
+};
+
+strict xunion MyStrictXUnion {
+    bool foo;
+    int32 bar;
+};
+
+table MyTable {
+    1: bool foo;
+    2: int32 bar;
+    3: reserved;
+    4: array<uint64>:42 baz;
+    5: vector<uint64>:42 qux;
+};
+
+bits MyBits : uint8 {
+    HELLO = 0x1;
+    WORLD = 0x10;
+};
+
+enum MyEnum : uint32 {
+    FOO = 1;
+    BAR = 42;
+};
+
+// Types defined to detect collisions in the mangled coding table output.
+struct A {};
+struct A1 {};
+struct NumberCollision {
+  array<A>:11 a;
+  array<A1>:1 b;
+  vector<A>:11 c;
+  vector<A1>:1 d;
+  string:11 e;
+  string:1 f;
+};
+
+// fidlc will only expose coding tables for message types.
+// However, we can obtain the coding tables for SomeStruct/MyXUnion etc. via the coding table
+// for request message types, by defining dummy methods which take a single desired argument.
+protocol Coding {
+    SomeStruct(SomeStruct s);
+
+    // Various trickery to avoid directly refering a xunion/table inline,
+    // which is not supported in the C bindings.
+    MyXUnion(MyXUnion? x);
+    MyStrictXUnion(MyStrictXUnion? x);
+
+    // Ensuring support for multiple uses of the same nullable type.
+    MyXUnion2(MyXUnion? x);
+    MyStrictXUnion2(MyStrictXUnion? x);
+
+    VectorOfMyTable(vector<MyTable> t);
+    VectorOfMyXUnion(vector<MyXUnion> x);
+    VectorOfMyStrictXUnion(vector<MyStrictXUnion> x);
+
+    MyBits(MyBits b);
+    MyEnum(MyEnum e);
+
+    NumberCollision(NumberCollision x);
+};

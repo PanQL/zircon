@@ -1,0 +1,28 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+  deps = [
+    ":hid-parser",
+  ]
+}
+
+test("hid-parser") {
+  sources = [
+    "hid-helper-test.cc",
+    "hid-parser-test.cc",
+    "hid-report-data.cc",
+    "hid-utest-data.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/hid-parser",
+    "$zx/system/ulib/zxtest",
+  ]
+}
+# TODO(BLD-356): hid-parser-fuzzer
+# sources=["hid-parser-fuzztest.cc"]
+# deps= hid-parser fbl fdio unittest

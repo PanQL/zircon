@@ -1,0 +1,71 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("crashsvc") {
+  sources = [
+    "crashsvc.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-crash:c",
+    "$zx/system/ulib/backtrace-request:utils",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/inspector",
+  ]
+  public_deps = [
+    "$zx/system/ulib/zx",
+  ]
+}
+
+executable("svchost") {
+  sources = [
+    "svchost.cc",
+    "sysmem.cc",
+  ]
+  deps = [
+    ":crashsvc",
+    "$zx/system/fidl/fuchsia-boot:c",
+    "$zx/system/fidl/fuchsia-device-manager:c",
+    "$zx/system/fidl/fuchsia-fshost:c",
+    "$zx/system/fidl/fuchsia-io:c",
+    "$zx/system/fidl/fuchsia-logger:c",
+    "$zx/system/fidl/fuchsia-mem:c",
+    "$zx/system/fidl/fuchsia-net:llcpp",
+    "$zx/system/fidl/fuchsia-paver:c",
+    "$zx/system/fidl/fuchsia-posix-socket:llcpp",
+    "$zx/system/fidl/fuchsia-process:c",
+    "$zx/system/fidl/fuchsia-scheduler:c",
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/fidl/fuchsia-virtualconsole:c",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/kernel-debug",
+    "$zx/system/ulib/kernel-mexec",
+    "$zx/system/ulib/logger",
+    "$zx/system/ulib/process-launcher",
+    "$zx/system/ulib/profile",
+    "$zx/system/ulib/svc",
+    "$zx/system/ulib/sysmem-connector",
+    "$zx/system/ulib/zircon",
+  ]
+}
+
+test("crashsvc-test") {
+  output_name = "crashsvc-test"
+  sources = [
+    "crashsvc-test.cc",
+  ]
+  deps = [
+    ":crashsvc",
+    "$zx/system/fidl/fuchsia-crash:c",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fidl-async",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/mini-process",
+    "$zx/system/ulib/zxtest",
+  ]
+}

@@ -1,0 +1,31 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("io-scheduler") {
+  static = true
+  sources = [
+    "scheduler.cc",
+    "stream.cc",
+    "worker.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/zircon",
+  ]
+}
+
+test("io-scheduler-test") {
+  output_name = "iosched"
+  sources = [
+    "test/main.cc",
+    "test/unique-op.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/io-scheduler",
+    "$zx/system/ulib/zxtest",
+  ]
+}

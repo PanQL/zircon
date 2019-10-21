@@ -1,0 +1,113 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("blobfs") {
+  host = true
+  sources = [
+    "common.cc",
+    "compression/lz4.cc",
+    "compression/zstd.cc",
+    "extent-reserver.cc",
+    "fsck.cc",
+    "iterator/allocated-extent-iterator.cc",
+    "iterator/block-iterator.cc",
+    "iterator/vector-extent-iterator.cc",
+    "node-reserver.cc",
+  ]
+  public_deps = [
+    "$zx/system/ulib/bitmap:headers",
+    "$zx/system/ulib/fs:headers",
+    "$zx/system/ulib/id_allocator:headers",
+    "$zx/system/ulib/range:headers",
+
+    # <blobfs/format.h> has #include <digest/digest.h>.
+    "$zx/system/ulib/digest:headers",
+
+    # <blobfs/allocator.h> has #include <fuchsia/blobfs/c/fidl.h>.
+    "$zx/system/fidl/fuchsia-blobfs:c.headers",
+
+    # <blobfs/compression/compressor.h> has #include <lz4/lz4frame.h>
+    "$zx/third_party/ulib/lz4:headers",
+
+    # <blobfs/compression/compressor.h> has #include <zstd/zstd.h>
+    "$zx/third_party/ulib/zstd:headers",
+  ]
+  deps = [
+    "$zx/system/ulib/bitmap",
+    "$zx/system/ulib/digest",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fit",
+    "$zx/system/ulib/fvm",
+    "$zx/system/ulib/id_allocator",
+    "$zx/system/ulib/range",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/third_party/ulib/cksum",
+    "$zx/third_party/ulib/lz4",
+    "$zx/third_party/ulib/safemath",
+    "$zx/third_party/ulib/uboringssl",
+    "$zx/third_party/ulib/zstd",
+  ]
+  if (is_fuchsia) {
+    sources += [
+      "allocator.cc",
+      "background-executor.cc",
+      "blob-cache.cc",
+      "blob.cc",
+      "blobfs.cc",
+      "buffer.cc",
+      "cache-node.cc",
+      "compression/blob-compressor.cc",
+      "directory.cc",
+      "format.cc",
+      "iterator/node-populator.cc",
+      "journal-entry.cc",
+      "journal.cc",
+      "metrics.cc",
+      "mount.cc",
+      "operation.cc",
+      "ring-buffer.cc",
+      "unbuffered-operations-builder.cc",
+      "vmo-buffer.cc",
+      "write-txn.cc",
+      "writeback-queue.cc",
+      "writeback-work.cc",
+      "writeback.cc",
+    ]
+    public_deps += [
+      "$zx/system/ulib/block-client:headers",
+
+      # <blobfs/writeback.h> has #include <lib/sync/completion.h>.
+      "$zx/system/ulib/fs/metrics:metrics-cobalt.headers",
+      "$zx/system/ulib/fs/metrics:metrics-composite-latency-event.headers",
+      "$zx/system/ulib/fs/metrics:metrics-inspect.headers",
+      "$zx/system/ulib/sync:headers",
+
+      # <blobfs/blobfs.h> has #include <.../fidl.h>
+      "$zx/system/fidl/fuchsia-device:c",
+      "$zx/system/fidl/fuchsia-hardware-block:c",
+      "$zx/system/fidl/fuchsia-hardware-block-volume:c",
+    ]
+    deps += [
+      "$zx/system/fidl/fuchsia-blobfs:c",
+      "$zx/system/ulib/async",
+      "$zx/system/ulib/async:async-cpp",
+      "$zx/system/ulib/async:async-default",
+      "$zx/system/ulib/async-loop",
+      "$zx/system/ulib/async-loop:async-loop-cpp",
+      "$zx/system/ulib/block-client",
+      "$zx/system/ulib/fdio",
+      "$zx/system/ulib/fidl-utils",
+      "$zx/system/ulib/fs/metrics:metrics",
+      "$zx/system/ulib/fzl",
+      "$zx/system/ulib/sync",
+      "$zx/system/ulib/trace",
+      "$zx/system/ulib/trace-engine",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zx",
+    ]
+  } else {
+    sources += [ "host.cc" ]
+    deps += [ "$zx/system/ulib/fs-host" ]
+  }
+}

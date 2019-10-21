@@ -1,0 +1,75 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("zstd-config") {
+  visibility = [ ":*" ]
+
+  include_dirs = [
+    "include/zstd",
+    "lib/common",
+    "lib/dictBuilder",
+  ]
+
+  configs = [ "$zx/public/gn/config:visibility_hidden" ]
+  defines = [
+    "ZDICTLIB_VISIBILITY=",
+    "ZSTDERRORLIB_VISIBILITY=",
+    "ZSTDLIB_VISIBILITY=",
+  ]
+
+  if (is_host) {
+    defines += [ "ZSTD_MULTITHREAD" ]
+  }
+}
+
+library("zstd") {
+  host = true
+  sources = [
+    "lib/common/debug.c",
+    "lib/common/entropy_common.c",
+    "lib/common/error_private.c",
+    "lib/common/fse_decompress.c",
+    "lib/common/pool.c",
+    "lib/common/threading.c",
+    "lib/common/xxhash.c",
+    "lib/common/zstd_common.c",
+    "lib/compress/fse_compress.c",
+    "lib/compress/hist.c",
+    "lib/compress/huf_compress.c",
+    "lib/compress/zstd_compress.c",
+    "lib/compress/zstd_double_fast.c",
+    "lib/compress/zstd_fast.c",
+    "lib/compress/zstd_lazy.c",
+    "lib/compress/zstd_ldm.c",
+    "lib/compress/zstd_opt.c",
+    "lib/compress/zstdmt_compress.c",
+    "lib/decompress/huf_decompress.c",
+    "lib/decompress/zstd_ddict.c",
+    "lib/decompress/zstd_decompress.c",
+    "lib/decompress/zstd_decompress_block.c",
+    "lib/dictBuilder/cover.c",
+    "lib/dictBuilder/divsufsort.c",
+    "lib/dictBuilder/fastcover.c",
+    "lib/dictBuilder/zdict.c",
+  ]
+  configs += [ ":zstd-config" ]
+}
+
+executable("zstdcli") {
+  output_name = "zstd"
+  sources = [
+    "programs/benchfn.c",
+    "programs/benchzstd.c",
+    "programs/datagen.c",
+    "programs/dibio.c",
+    "programs/fileio.c",
+    "programs/util.c",
+    "programs/zstdcli.c",
+  ]
+  deps = [
+    ":zstd",
+    "$zx/system/ulib/fdio",
+  ]
+  configs += [ ":zstd-config" ]
+}

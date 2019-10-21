@@ -1,0 +1,65 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("pc") {
+  kernel = true
+  sources = [
+    "console.cc",
+    "debug.cc",
+    "hpet.cc",
+    "interrupts.cc",
+    "keyboard.cc",
+    "memory.cc",
+    "pcie_quirks.cc",
+    "pic.cc",
+    "platform.cc",
+    "platform_pcie.cc",
+    "power.cc",
+    "smbios.cc",
+    "timer.cc",
+  ]
+  deps = [
+    ":tests",
+    "$zx/kernel/dev/interrupt",
+    "$zx/kernel/dev/pcie",
+    "$zx/kernel/lib/acpi_tables",
+    "$zx/kernel/lib/cbuf",
+    "$zx/kernel/lib/console",
+    "$zx/kernel/lib/efi",
+    "$zx/kernel/lib/fbl",
+    "$zx/kernel/lib/fixed_point",
+    "$zx/kernel/lib/gfxconsole",
+    "$zx/kernel/lib/lockdep",
+    "$zx/kernel/lib/memory_limit",
+    "$zx/kernel/lib/pow2_range_allocator",
+    "$zx/kernel/lib/topology",
+    "$zx/kernel/lib/unittest",
+    "$zx/kernel/lib/version",
+    "$zx/system/ulib/libzbi",
+    "$zx/system/ulib/smbios",
+    "$zx/third_party/lib/acpica",
+    "$zx/third_party/ulib/cksum",
+  ]
+  public_deps = [
+    # <platform/pc/smbios.h> has #include <lib/smbios/smbios.h>.
+    "$zx/system/ulib/smbios:headers",
+
+    # <platform/pc/acpi.h> has #include <acpica/acpi.h>.
+    "$zx/third_party/lib/acpica:headers",
+  ]
+}
+
+source_set("tests") {
+  # TODO: testonly = true
+  sources = [
+    "interrupts_test.cc",
+  ]
+  deps = [
+    ":headers",
+    "$zx/kernel/dev/interrupt",
+    "$zx/kernel/lib/console",
+    "$zx/kernel/lib/pow2_range_allocator",
+    "$zx/kernel/lib/unittest",
+  ]
+}

@@ -1,0 +1,54 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("sherlock") {
+  sources = [
+    "sherlock-audio.cc",
+    "sherlock-bluetooth.cc",
+    "sherlock-board.cc",
+    "sherlock-buttons.cc",
+    "sherlock-camera.cc",
+    "sherlock-canvas.cc",
+    "sherlock-clk.cc",
+    "sherlock-display.cc",
+    "sherlock-emmc.cc",
+    "sherlock-gpio.cc",
+    "sherlock-i2c.cc",
+    "sherlock-light.cc",
+    "sherlock-mali.cc",
+    "sherlock-sdio.cc",
+    "sherlock-spi.cc",
+    "sherlock-sysmem.cc",
+    "sherlock-tee.cc",
+    "sherlock-thermal.cc",
+    "sherlock-touch.cc",
+    "sherlock-usb.cc",
+    "sherlock-video.cc",
+    "sherlock.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.clock",
+    "$zx/system/banjo/ddk.protocol.clockimpl",
+    "$zx/system/banjo/ddk.protocol.gpio",
+    "$zx/system/banjo/ddk.protocol.gpioimpl",
+    "$zx/system/banjo/ddk.protocol.iommu",
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.scpi",
+    "$zx/system/banjo/ddk.protocol.serial",
+    "$zx/system/dev/lib/amlogic",
+    "$zx/system/dev/lib/broadcom",
+    "$zx/system/dev/lib/focaltech",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/dev/lib/usb",
+    "$zx/system/fidl/fuchsia-hardware-serial:c",
+    "$zx/system/fidl/fuchsia-hardware-thermal:c",
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}

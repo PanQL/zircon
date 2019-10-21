@@ -1,0 +1,67 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("platform") {
+  deps = [
+    ":platform-bus",
+    ":platform-bus.proxy",
+  ]
+}
+
+driver("platform-bus") {
+  sources = [
+    "cpu-trace.cc",
+    "device-resources.cc",
+    "platform-bus.cc",
+    "platform-composite-device.cc",
+    "platform-device.cc",
+    "platform-protocol-device.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.amlogiccanvas",
+    "$zx/system/banjo/ddk.protocol.clock",
+    "$zx/system/banjo/ddk.protocol.clockimpl",
+    "$zx/system/banjo/ddk.protocol.gpio",
+    "$zx/system/banjo/ddk.protocol.gpioimpl",
+    "$zx/system/banjo/ddk.protocol.iommu",
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.powerimpl",
+    "$zx/system/banjo/ddk.protocol.sysmem",
+    "$zx/system/fidl/fuchsia-boot:c",
+    "$zx/system/fidl/fuchsia-sysinfo:c",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+
+  # TODO(ZX-2863): This driver violates the allowed shlib deps policy.
+  deprecated_inhibit_driver_shlib_allowlist = true
+}
+
+driver("platform-bus.proxy") {
+  sources = [
+    "platform-proxy.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.amlogiccanvas",
+    "$zx/system/banjo/ddk.protocol.clock",
+    "$zx/system/banjo/ddk.protocol.gpio",
+    "$zx/system/banjo/ddk.protocol.gpioimpl",
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.power",
+    "$zx/system/banjo/ddk.protocol.sysmem",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}

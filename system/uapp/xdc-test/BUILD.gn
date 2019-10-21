@@ -1,0 +1,30 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("xdc-test") {
+  sources = [
+    "xdc-device.cc",
+    "xdc-test.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-usb-debug:c",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+host_tool("xdc-test-host") {
+  sources = [
+    "xdc-host.cc",
+    "xdc-test.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/xdc-host-utils",
+    "$zx/system/ulib/xdc-server-utils",
+  ]
+}

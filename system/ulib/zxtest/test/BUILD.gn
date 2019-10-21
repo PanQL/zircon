@@ -1,0 +1,38 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+  deps = [
+    ":zxtest",
+    "integration",
+  ]
+}
+
+test("zxtest") {
+  sources = [
+    "assertion_test.cc",
+    "event-broadcaster_test.cc",
+    "main.cc",
+    "reporter_test.cc",
+    "runner_test.cc",
+    "test-case_test.cc",
+    "test-info_test.cc",
+    "test_test.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/zxtest",
+  ]
+  if (is_fuchsia) {
+    sources += [ "death-statement_test.cc" ]
+
+    deps += [
+      "$zx/system/ulib/fdio",
+      "$zx/system/ulib/fit",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zx",
+    ]
+  }
+}

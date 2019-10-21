@@ -1,0 +1,338 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/public/gn/config/standard.gni")
+import("$zx/public/gn/toolchain/environment_redirect.gni")
+import("$zx/public/gn/zbi.gni")
+
+if (current_cpu != "") {
+  group("utest") {
+    testonly = true
+
+    # For unittests, the recommended naming scheme is:
+    #   path/to/code/test
+    # or
+    #   path/to/code:test
+    #
+    # Where "test" is a group containing all unittest labels.
+    deps = [
+      ":host",  # TODO(mcgrathr): reach this differently?
+      "$zx/system/core/bootsvc:tests",
+      "$zx/system/core/devmgr/devcoordinator:devcoordinator-test",
+      "$zx/system/core/devmgr/devhost:devhost-test",
+      "$zx/system/core/devmgr/fshost:block-watcher-test",
+      "$zx/system/core/devmgr/fshost:fshost-test",
+      "$zx/system/core/netsvc:netsvc-test",
+      "$zx/system/core/svchost:crashsvc-test",
+      "$zx/system/core/virtcon:virtual-console-test",
+      "$zx/system/dev/audio/codecs/max98373:max98373-test",
+      "$zx/system/dev/audio/codecs/tas5782:tas5782-test",
+      "$zx/system/dev/audio/codecs/tas5805:tas5805-test",
+      "$zx/system/dev/audio/intel-hda/test",
+      "$zx/system/dev/audio/lib/simple-audio-stream:sa-unittest",
+      "$zx/system/dev/backlight/sg-micro:sgm37603a-test",
+      "$zx/system/dev/block/ahci:ahci-unittest",
+      "$zx/system/dev/block/aml-sd-emmc:aml-sd-emmc-test",
+      "$zx/system/dev/block/ftl/test",
+      "$zx/system/dev/block/fvm/test",
+      "$zx/system/dev/block/mbr:mbr-test",
+      "$zx/system/dev/block/mtk-sdmmc:mtk-sdmmc-test",
+      "$zx/system/dev/block/sdmmc:sdmmc-test",
+      "$zx/system/dev/block/usb-mass-storage:tests",
+      "$zx/system/dev/bluetooth/bt-hci-mediatek:bt-hci-mediatek-test",
+      "$zx/system/dev/board/mt8167s_ref:mt8167s_ref-test",
+      "$zx/system/dev/bus/pci:pci-driver",
+      "$zx/system/dev/bus/pci:pci-unit",
+      "$zx/system/dev/bus/virtio:virtio-test",
+      "$zx/system/dev/clk/amlogic-clk:amlogic-clk-test",
+      "$zx/system/dev/clk/msm8x53-clk:msm8x53-clk-test",
+      "$zx/system/dev/clk/syn-clk:syn-clk-test",
+      "$zx/system/dev/codec/alc5663:test",
+      "$zx/system/dev/display/display/test",
+      "$zx/system/dev/display/mt8167s-display:tests",
+      "$zx/system/dev/ethernet/ethernet:ethernet-unittest",
+      "$zx/system/dev/gpio/as370-gpio:as370-gpio-test",
+      "$zx/system/dev/gpio/mt-8167:mtk-gpio",
+      "$zx/system/dev/gpio/qcom-gpio:qcom-gpio-test",
+      "$zx/system/dev/i2c/dw-i2c:dw-i2c-test",
+      "$zx/system/dev/i2c/mt8167-i2c:mt8167-i2c-test",
+      "$zx/system/dev/input/bma253:bma253-test",
+      "$zx/system/dev/input/hid-buttons:hid-buttons-test",
+      "$zx/system/dev/lib/fake-bti/test:fake-bti",
+      "$zx/system/dev/lib/mt8167:mt8167-audio-lib-test",
+      "$zx/system/dev/lib/scsi:scsilib-disk-test",
+      "$zx/system/dev/lib/usb:usb-wrapper-test",
+      "$zx/system/dev/light-sensor/lite-on:ltr-578als-test",
+      "$zx/system/dev/nand/broker/test",
+      "$zx/system/dev/nand/nand/test",
+      "$zx/system/dev/nand/nandpart:nandpart-test",
+      "$zx/system/dev/nand/ram-nand:ram-nand-test",
+      "$zx/system/dev/nand/skip-block:skip-block-test",
+      "$zx/system/dev/power/msm8x53-power:msm8x53-power-test",
+      "$zx/system/dev/power/mtk-power:mtk-power-test",
+      "$zx/system/dev/serial/ftdi/test:ftdi-i2c-test",
+      "$zx/system/dev/serial/serial/test",
+      "$zx/system/dev/serial/uart16550:uart16550-test",
+      "$zx/system/dev/spi/spi:spi-test",
+      "$zx/system/dev/sysmem/sysmem:sysmem-unittest",
+      "$zx/system/dev/test",
+      "$zx/system/dev/thermal/aml-thermal-s912:aml-thermal-s912-test",
+      "$zx/system/dev/thermal/mtk-thermal:mtk-thermal-test",
+      "$zx/system/dev/usb/mt-musb-host:mt-hci-request-queue-test",
+      "$zx/system/dev/usb/mt-musb-host:mt-hci-test",
+      "$zx/system/dev/usb/mt-musb-host:mt-hci-transaction-test",
+      "$zx/system/uapp/disk-pave:install-disk-image-test",
+      "$zx/system/uapp/nand-util:nand-util-test",
+      "$zx/system/uapp/netdump:netdump-test",
+      "$zx/system/uapp/thermal-cli:thermal-cli-test",
+      "$zx/system/ulib/affine/test",
+      "$zx/system/ulib/async-loop/test",
+      "$zx/system/ulib/async-testing/test",
+      "$zx/system/ulib/async/test",
+      "$zx/system/ulib/backtrace-request/test",
+      "$zx/system/ulib/bitmap/test",
+      "$zx/system/ulib/blobfs/test",
+      "$zx/system/ulib/block-client/test",
+      "$zx/system/ulib/bootfs:bootfs-test",
+      "$zx/system/ulib/c/test",
+      "$zx/system/ulib/cobalt-client/test",
+      "$zx/system/ulib/crypto/test",
+      "$zx/system/ulib/ddk:ddk-unittest",
+      "$zx/system/ulib/debugdata/test",
+      "$zx/system/ulib/devmgr-integration-test/test",
+      "$zx/system/ulib/digest/test",
+      "$zx/system/ulib/disk-inspector/test",
+      "$zx/system/ulib/driver-integration-test/test",
+      "$zx/system/ulib/driver-unit-test/test",
+      "$zx/system/ulib/elf-search/test",
+      "$zx/system/ulib/fbl/test",
+      "$zx/system/ulib/fs/metrics/test:metrics",
+      "$zx/system/ulib/fs/test",
+      "$zx/system/ulib/fvm/test",
+      "$zx/system/ulib/fzl/test",
+      "$zx/system/ulib/gpt/test",
+      "$zx/system/ulib/hermetic-compute/test",
+      "$zx/system/ulib/hermetic-decompressor/test",
+      "$zx/system/ulib/hid-parser/test",
+      "$zx/system/ulib/hwreg/test",
+      "$zx/system/ulib/id_allocator/test",
+      "$zx/system/ulib/intel-hda:test",
+      "$zx/system/ulib/io-scheduler:io-scheduler-test",
+      "$zx/system/ulib/kernel-mexec:kernel-mexec-test",
+      "$zx/system/ulib/kvstore:kvstore-test",
+      "$zx/system/ulib/launchpad/test",
+      "$zx/system/ulib/lazy_init:lazy_init-test",
+      "$zx/system/ulib/libzbi/test",
+      "$zx/system/ulib/lockdep:test",
+      "$zx/system/ulib/memfs/test",
+      "$zx/system/ulib/minfs/allocator/test",
+      "$zx/system/ulib/minfs/test",
+      "$zx/system/ulib/mipi-dsi:mipidsi",
+      "$zx/system/ulib/mock-function/test",
+
+      # FLK-298
+      #"$zx/system/ulib/paver:paver-test",
+      "$zx/system/ulib/pretty:pretty-test",
+      "$zx/system/ulib/range/test",
+      "$zx/system/ulib/region-alloc/test",
+      "$zx/system/ulib/simplehid/test",
+      "$zx/system/ulib/smbios:smbios-test",
+      "$zx/system/ulib/storage-metrics/test",
+      "$zx/system/ulib/syslog/test",
+      "$zx/system/ulib/test-exceptions/test",
+      "$zx/system/ulib/test-utils/test",
+      "$zx/system/ulib/tftp:tftp-test",
+      "$zx/system/ulib/trace-engine:tests",
+      "$zx/system/ulib/trace-reader:tests",
+      "$zx/system/ulib/trace-vthread:tests",
+      "$zx/system/ulib/unittest/test",
+      "$zx/system/ulib/utf_conversion/test",
+      "$zx/system/ulib/zbi-bootfs/test",
+      "$zx/system/ulib/zx/test",
+      "$zx/system/ulib/zxio/test",
+      "$zx/system/ulib/zxtest/test",
+      "abigen",
+      "backtrace-request:backtrace-request-integration",
+      "biotime",
+      "blobfs",
+      "blobfs-bench",
+      "channel-fatal",
+      "chromeos-disk-setup",
+      "cleanup",
+      "compiler",
+      "core",
+      "cprng",
+      "ctor",
+      "debugger",
+      "devfs",
+      "device-enumeration",
+      "dlfcn",
+      "dlopen-indirect-deps",
+      "driver-test",
+      "dump1",
+      "entropy",
+      "errno",
+      "ethernet",
+      "events",
+      "evil",
+      "exception",
+      "exit",
+      "fdio",
+      "ffl",
+      "fidl",
+      "fidl-coding-tables",
+      "fidl-llcpp-interop",
+      "fidl-simple",
+      "fidl-utils",
+      "fit",
+      "fpu",
+      "fs",
+      "fs-bench",
+      "fs-management",
+      "fs-recovery",
+      "fs-test-utils",
+      "futex-ownership",
+      "fvm",
+      "fvm:fvm-integration",
+      "getentropy",
+      "goldfish",
+      "handle-alias",
+      "hid",
+      "hypervisor",
+      "inspect-vmo",
+      "int-types",
+      "kcounter",
+      "kernel-unittests",
+      "log",
+      "logger",
+      "memfs",
+      "miscsvc",
+      "msd",
+      "namespace",
+      "noop-fuzzer",
+      "perftest",
+      "platform-bus",
+      "policy",
+      "posixio",
+      "processor",
+      "profile",
+      "property",
+      "pty",
+      "qsort",
+      "race-tests",
+      "ramdisk",
+      "register-state",
+      "rtc-lib",
+      "runtests-utils",
+      "sanitizer",
+      "spawn",
+      "status",
+      "stdio",
+      "sysconf",
+      "sysinfo",
+      "sysmem",
+      "task-utils",
+      "thread-initial-state",
+      "thread-state",
+      "time",
+      "timers",
+      "trace",
+      "usb",
+      "usb-virtual-bus:test",
+      "util",
+      "vdso",
+      "vdso-base",
+      "vdso-variant",
+      "virtio",
+      "virtual_camera:test",
+      "vmo",
+      "zxcrypt",
+
+      # disabled for now:
+      #"bad-kernel-access",
+      #"usb-virtual-bus",
+
+      # TODO(fuzztest): "edid"
+    ]
+    if (current_cpu == "x64") {
+      deps += [
+        "$zx/system/dev/board/x86:x86-battery-test",
+        "$zx/system/dev/board/x86:x86-board-test",
+        "$zx/system/dev/board/x86:x86-lid-test",
+        "x86-umip",
+      ]
+    }
+  }
+
+  # This plus a kernel in deps makes a tiny zbi() that just runs core-tests.
+  zbi_input("core-tests") {
+    testonly = true
+    type = "cmdline"
+    args = [
+      "--entry=userboot=bin/core-tests",
+      "--entry=userboot.shutdown",
+    ]
+    deps = [
+      "$zx/system/utest/core:core-tests",
+    ]
+  }
+
+  group("host-tests") {
+    testonly = true
+    deps = [
+      "$zx/system/ulib/blobfs/test:blobfs-host",
+      "$zx/system/ulib/fbl/test",
+      "$zx/system/ulib/fvm/test",
+      "$zx/system/ulib/libzbi/test",
+      "$zx/system/ulib/trace-reader:tests",
+      "$zx/system/ulib/zxtest/test",
+      "cmdline",
+      "ffl",
+      "fidl-compiler",
+      "fit",
+      "fs-host",
+      "fvm-host",
+      "runtests-utils",
+      "util",
+    ]
+    if (current_os == "linux") {
+      deps += [
+        "$zx/system/dev/usb/usb-peripheral-test",
+        "$zx/system/ulib/ftl-mtd/test",
+        "ftl-mtd",
+        "mtd",
+        "nand-redundant-storage",
+      ]
+    }
+  }
+}
+
+# Build the host tests for each host.
+foreach(host, standard_build_hosts) {
+  environment_redirect("host-tests-${host.os}-${host.cpu}") {
+    testonly = true
+    environment_label = "$zx/public/gn/toolchain:host"
+    cpu = host.cpu
+    os = host.os
+    direct = true
+    deps = [
+      ":host-tests",
+    ]
+  }
+}
+
+group("host-tests-all-platforms") {
+  testonly = true
+  deps = []
+  foreach(host, standard_build_hosts) {
+    deps += [ ":host-tests-${host.os}-${host.cpu}" ]
+  }
+}
+
+group("host") {
+  testonly = true
+  deps = [
+    ":host-tests-${host_os}-${host_cpu}",
+  ]
+}

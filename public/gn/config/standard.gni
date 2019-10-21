@@ -1,0 +1,410 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/public/gn/prebuilt.gni")
+
+# All the $current_cpu values that `current_os == "fuchsia"` supports.
+standard_fuchsia_cpus = [
+  "arm64",
+  "x64",
+]
+
+# All the {cpu, os} combinations supported as build or SDK hosts.  The
+# build will define toolchains for all of these.  Successful
+# cross-compilation may require that a sysroot be installed and configured.
+standard_build_hosts = [
+  {
+    cpu = "arm64"
+    os = "linux"
+  },
+  {
+    cpu = "x64"
+    os = "linux"
+  },
+]
+
+# Default value for $sysroot build argument.
+standard_sysroot = []
+foreach(host, standard_build_hosts) {
+  standard_sysroot += [
+    {
+      cpu = host.cpu
+      os = host.os
+      sysroot = "$prebuilt_dir/third_party/sysroot/$os-$cpu"
+    },
+  ]
+}
+
+# Cross-compiling to Mac isn't possible because of the Mach-O linker.
+if (host_os == "mac") {
+  standard_build_hosts += [
+    {
+      cpu = host_cpu
+      os = "mac"
+    },
+  ]
+  _xcode_sysroot =
+      exec_script("/usr/bin/xcrun", [ "--show-sdk-path" ], "trim string")
+  if (_xcode_sysroot != "") {
+    standard_sysroot += [
+      {
+        cpu = host_cpu
+        os = "mac"
+        sysroot = _xcode_sysroot
+      },
+    ]
+  }
+}
+
+# Universal configs that apply to all code in the build.
+standard_configs = [
+  "$zx/public/gn/config:compiler",
+  "$zx/public/gn/config:language",
+  "$zx/public/gn/config:machine",
+  "$zx/public/gn/config:relative_paths",
+  "$zx/public/gn/config:assert_level",
+  "$zx/public/gn/config:opt_level",
+  "$zx/public/gn/config:symbol_level",
+  "$zx/public/gn/config:default_warnings",
+  "$zx/public/gn/config:default_include_dirs",
+  "$zx/public/gn/config:default_frame_pointers",
+  "$zx/public/gn/config:default_linker_gc",
+  "$zx/public/gn/config:default_template_backtrace_limit",
+  "$zx/public/gn/config:no_exceptions",
+  "$zx/public/gn/config:no_rtti",
+  "$zx/public/gn/config:no_threadsafe_statics",
+  "$zx/public/gn/config:thread_safety_annotations",
+
+  # TODO(ZX-1895): "$zx/public/gn/config:symbol_visibility_hidden",
+
+  {
+    # Additional configs apply only to code built into shared libraries.
+    # This means everything in a ${toolchain.shlib} toolchain, not just code
+    # directly in the `sources` of a shared_library() or library() target.
+    shlib = true
+    add = [
+      "$zx/public/gn/config:shared_library_config",
+      "$zx/public/gn/config:no_undefined_symbols",
+    ]
+  },
+]
+
+# Additional configs apply to code built for Fuchsia but not to host code.
+standard_fuchsia_configs = [ "$zx/public/gn/config:werror" ]
+
+# See environment().  These are the environments that are
+# vanilla bases to make derived environments from.
+standard_environments = [
+  {
+    name = "host"
+    targets = standard_build_hosts
+    globals = {
+      is_host = true
+    }
+    strip = true
+  },
+  {
+    name = "user"
+    targets = []
+    foreach(cpu, standard_fuchsia_cpus) {
+      targets += [
+        {
+          cpu = cpu
+        },
+      ]
+    }
+    configs = standard_fuchsia_configs
+    configs += [
+      "$zx/public/gn/config:user",
+      {
+        shlib = false
+        add = [ "$zx/public/gn/config:user_executable" ]
+      },
+      {
+        # All drivers use hidden visibility and the static standard C++ library.
+        types = [
+          "driver",
+          "test_driver",
+        ]
+        add = [
+          "$zx/public/gn/config:visibility_hidden",
+          "$zx/public/gn/config:static-libc++",
+        ]
+      },
+    ]
+    implicit_deps = [
+      "$zx/system/ulib/c",
+      {
+        types = [
+          "executable",
+          "host_tool",
+          "test",
+        ]
+        add = [ "$zx/system/ulib/c:crt1" ]
+      },
+      {
+        types = [ "host_tool" ]
+        add = [ "$zx/system/ulib/fdio" ]
+      },
+      {
+        # The "driver_deps" target represents the execution environment
+        # into which driver modules get loaded.  This represents the
+        # vanilla (or configured) environment.  Variants can remove this
+        # and add a different variant driver_deps label that represents the
+        # execution environment those drivers should get.
+        types = [
+          "driver",
+          "test_driver",
+        ]
+        add = [ "$zx/system/core/devmgr:driver_deps" ]
+      },
+
+      # The compiler implicitly links to runtime libraries that might turn
+      # into runtime dependencies on the shared libraries.  By default,
+      # that includes the shared standard C++ runtime.  But when that is
+      # linked in statically, other runtimes (e.g. instrumentation) still
+      # implicitly linked in might have runtime dependencies of their own.
+      # So first add the static C++ deps and then, if not actually using
+      # static C++, remove it again and add the shared C++ deps instead.
+      "$zx/public/gn/config:static-libc++-deps",
+      {
+        unless_configs = [ "$zx/public/gn/config:static-libc++" ]
+        add = [ "$zx/public/gn/config:shared-libc++-deps" ]
+        remove = [ "$zx/public/gn/config:static-libc++-deps" ]
+      },
+    ]
+    shlib = true
+    strip = "--strip-sections"
+  },
+]
+
+# These `standard*variants` lists have the same structure as $variants (see
+# $zx/public/gn/toolchain/environment.gni) but it just supply definitions
+# of variants with standard names.  The $variants list can refer to
+# variants defined here by name, but these are not otherwise involved in
+# variant selection.
+standard_variants = []
+
+# These are the baseline variants.  $default_variants refers only to things
+# defined here.
+standard_base_variants = [
+  {
+    variant = {
+      name = "clang"
+    }
+  },
+  {
+    variant = {
+      name = "gcc"
+      tags = [ "gcc" ]
+      globals = {
+        is_gcc = true
+      }
+    }
+  },
+]
+standard_variants += standard_base_variants
+
+# These are variants that use "sanitizer" instrumentation.
+# They are interesting for e.g. fuzzer environments.
+standard_sanitizer_variants = [
+  {
+    variant = {
+      name = "asan"
+      configs = [
+        {
+          # ASan wants frame pointers because it captures stack traces
+          # on allocations and such, not just on errors.
+          remove = [ "$zx/public/gn/config:default_frame_pointers" ]
+          add = [
+            "$zx/public/gn/config:frame_pointers",
+            "$zx/public/gn/config/instrumentation:asan",
+          ]
+        },
+      ]
+      implicit_deps = [
+        {
+          types = [
+            "executable",
+            "host_tool",
+            "test",
+          ]
+          add = [ "$zx/public/gn/config/instrumentation:asan_default_options" ]
+        },
+        {
+          # ASan drivers need to live in an ASan-compatible environment.
+          types = [ "driver" ]
+          remove = [ "$zx/system/core/devmgr:driver_deps" ]
+          add = [ "$zx/system/core/devmgr:driver_deps.$name" ]
+        },
+      ]
+      toolchain_vars = {
+        # This is the key for toolchain_runtime_deps() to find the right
+        # shared library dependencies for the instrumentation.  Note that
+        # the asan runtime includes ubsan but not vice versa, so this set
+        # must be used in preference to ubsan when both are enabled.
+        runtime_deps_cflags = [ "-fsanitize=address" ]
+      }
+      tags = [
+        "instrumented",
+        "useronly",
+      ]
+    }
+  },
+  {
+    variant = {
+      name = "ubsan"
+      configs = [ "$zx/public/gn/config/instrumentation:ubsan" ]
+      toolchain_vars = {
+        # This is the key for toolchain_runtime_deps() to find the right
+        # shared library dependencies for the instrumentation.  Note that
+        # the asan runtime includes ubsan but not vice versa, so this set
+        # should be ignored and the asan set used instead.
+        runtime_deps_cflags = [ "-fsanitize=undefined" ]
+      }
+      tags = [
+        "instrumented",
+        "useronly",
+      ]
+    }
+  },
+  {
+    variant = {
+      name = "asan-ubsan"
+      bases = [
+        # Note ubsan comes first so that asan's runtime_deps_cflags setting
+        # can override it.  Later bases append to configs and
+        # implicit_deps, but each toolchain_vars field just replaces any
+        # value set by the earlier base.
+        "ubsan",
+        "asan",
+      ]
+    }
+  },
+]
+standard_variants += standard_sanitizer_variants
+
+# These are additional standard variants that are not likely to
+# be interesting for special-purpose environments like fuzzers.
+standard_variants += [
+  {
+    variant = {
+      name = "lto"
+      configs = [ "$zx/public/gn/config/lto" ]
+    }
+  },
+  {
+    variant = {
+      name = "thinlto"
+      configs = [ "$zx/public/gn/config/lto:thinlto" ]
+    }
+  },
+  {
+    variant = {
+      name = "profile"
+      configs = [ "$zx/public/gn/config/instrumentation:profile" ]
+      implicit_deps = [ "$zx/public/gn/config/instrumentation:profile_deps" ]
+      tags = [ "instrumented" ]
+    }
+  },
+  {
+    # Note there is no plain "sancov" variant because there is no
+    # standalone runtime for sancov.  The sancov runtime is included in all
+    # the other sanitizer runtimes.  Since ubsan is the lowest-impact
+    # sanitizer, ubsan-sancov stands in for "plain" sancov.
+    variant = {
+      name = "ubsan-sancov"
+      bases = [ "ubsan" ]
+
+      # The "sancov" tag is important: see $zx/system/ulib/c/sanitizers.
+      configs = [ "$zx/public/gn/config/instrumentation:sancov" ]
+      tags = [ "sancov" ]
+    }
+  },
+  {
+    variant = {
+      name = "ubsan-sancov-full"
+      bases = [ "ubsan" ]
+
+      # The "sancov" tag is important: see $zx/system/ulib/c/sanitizers.
+      configs = [ "$zx/public/gn/config/instrumentation:sancov-full" ]
+      tags = [ "sancov" ]
+    }
+  },
+]
+
+# This list is appended to the $variants list for the build.  It provides
+# default selectors that match if nothing else does.  The first catch-all
+# selector must be compatible with all environments used in
+# environment_redirect(),
+default_variants = [
+  # Use Clang as default for both host and the target.
+  "clang",
+]
+
+# default_variants only refers to variants in standard_base_variants.
+foreach(default, default_variants) {
+  if (default == "$default") {
+    _default = default
+  } else {
+    _default = default.variant
+  }
+  assert(_default == "$_default")
+  foreach(selector, standard_base_variants) {
+    _variant = {
+      # Clear from last iteration.
+    }
+    _variant = selector.variant
+    if (_default == _variant.name) {
+      _default = true
+    }
+  }
+  assert(_default == true)
+}
+
+# Define shorthand selectors that can be used in $variants, which see.
+# This is a list of scopes.  Each scope defines one shorthand.
+#
+#   name
+#     Required: The name that matches a string element of $variants (or the
+#     part of an element before the slash).
+#     Type: string
+#
+#   selectors
+#     Required: The expansion, a list of selectors.  An element of $variants
+#     that matches $name is removed and the $selectors list is spliced into the
+#     list in its place.  An element that matches "$name/something" is instead
+#     replaced by this $selectors list with `output_name = "something"` added
+#     to each element.
+#     Type: See $variants.
+#
+variant_shorthands = [
+  {
+    name = "host_gcc"
+    selectors = [
+      {
+        variant = "gcc"
+        host = true
+      },
+    ]
+  },
+  {
+    name = "host_asan"
+    selectors = [
+      {
+        variant = "asan"
+        host = true
+      },
+    ]
+  },
+  {
+    name = "asan_drivers"
+    selectors = [
+      {
+        variant = "asan"
+        target_type = [ "driver" ]
+      },
+    ]
+  },
+]

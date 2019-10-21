@@ -1,0 +1,75 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("virtio") {
+  sources = [
+    "backends/pci.cc",
+    "backends/pci_legacy.cc",
+    "backends/pci_modern.cc",
+    "block.cc",
+    "console.cc",
+    "ethernet.cc",
+    "gpu.cc",
+    "input.cc",
+    "input_kbd.cc",
+    "input_touch.cc",
+    "rng.cc",
+    "socket.cc",
+    "virtio_driver.cc",
+  ]
+  deps = [
+    ":common",
+    "$zx/system/banjo/ddk.protocol.display.controller",
+    "$zx/system/banjo/ddk.protocol.ethernet",
+    "$zx/system/banjo/ddk.protocol.hidbus",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/fidl/fuchsia-hardware-pty:c",
+    "$zx/system/fidl/fuchsia-hardware-vsock:c",
+    "$zx/system/ulib/hid",
+  ]
+
+  # TODO(ZX-2863): This driver violates the allowed shlib deps policy.
+  deprecated_inhibit_driver_shlib_allowlist = true
+}
+
+source_set("common") {
+  visibility = [ ":*" ]
+  sources = [
+    "device.cc",
+    "ring.cc",
+    "scsi.cc",
+  ]
+  public_deps = [
+    "$zx/system/banjo/ddk.protocol.block",
+    "$zx/system/banjo/ddk.protocol.pci",
+    "$zx/system/dev/lib/device-protocol-pci",
+    "$zx/system/dev/lib/scsi",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/hid",
+    "$zx/system/ulib/hwreg",
+    "$zx/system/ulib/pretty",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/virtio",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+test("virtio-test") {
+  sources = [
+    "scsi_test.cc",
+  ]
+  deps = [
+    ":common",
+    "$zx/system/dev/lib/fake_ddk",
+    "$zx/system/ulib/driver",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zxtest",
+  ]
+}

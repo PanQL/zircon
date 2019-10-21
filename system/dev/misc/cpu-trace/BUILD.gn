@@ -1,0 +1,31 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("cpu-trace") {
+  sources = [
+    "cpu-trace.cc",
+    "perf-mon.cc",
+  ]
+
+  if (current_cpu == "arm64") {
+    sources += [ "arm64-pm.cc" ]
+  } else if (current_cpu == "x64") {
+    sources += [
+      "intel-pm.cc",
+      "intel-pt.cc",
+    ]
+  }
+
+  deps = [
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/fidl/fuchsia-perfmon-cpu:c",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zx",
+  ]
+}

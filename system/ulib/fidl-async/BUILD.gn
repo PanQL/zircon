@@ -1,0 +1,39 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("fidl-async") {
+  sdk = "source"
+  sdk_publishable = true
+  sdk_headers = [ "lib/fidl-async/bind.h" ]
+  sources = [
+    "bind.c",
+  ]
+  deps = [
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/zircon",
+  ]
+}
+
+library("fidl-async-cpp") {
+  sdk = "source"
+  sdk_headers = [
+    "lib/fidl-async/cpp/bind.h",
+    "lib/fidl-async/cpp/channel_transaction.h",
+  ]
+  sources = [
+    "llcpp_bind.cc",
+    "llcpp_channel_transaction.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/fidl:fidl-llcpp",
+    "$zx/system/ulib/zircon",
+  ]
+  public_deps = [
+    # <lib/fidl-async/cpp/channel_transaction.h> has #include <lib/zx/channel.h>.
+    "$zx/system/ulib/zx:headers",
+  ]
+}

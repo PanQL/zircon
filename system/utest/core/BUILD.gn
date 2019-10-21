@@ -1,0 +1,113 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/public/gn/test/zbi_test.gni")
+
+# Each subdirectory just provides an eponymous source_set().
+core_tests = [
+  "bad-syscall",
+  "debug",
+  "c11-condvar",
+  "c11-mutex",
+  "c11-thread",
+  "channel",
+  "clock",
+  "elf-tls",
+  "event-pair",
+  "fifo",
+  "futex",
+  "handle-close",
+  "handle-info",
+  "handle-transfer",
+  "handle-wait",
+  "job",
+  "memory-mapping",
+  "object-child",
+  "object-info",
+  "pager",
+  "port",
+  "process",
+  "pthread",
+  "pthread-barrier",
+  "pthread-tls",
+  "socket",
+  "stack",
+  "sync-completion",
+  "sync-condition",
+  "sync-mutex",
+  "threads",
+  "time",
+  "vmar",
+  "vmo",
+]
+
+# These tests need get_root_resource(), which is only available in the
+# unified core-tests binary.
+unified_only = [
+  "bti",
+  "interrupt",
+  "profile",
+  "resource",
+  "system-event",
+]
+
+group("core") {
+  testonly = true
+
+  # The zbi_test() doesn't go into any other zbi() image.  This just brings
+  # it into the dependency graph for building and test-running metadata.
+  deps = [
+    ":core-tests",  # Together.
+  ]
+  foreach(test, core_tests) {
+    deps += [ ":$test" ]  # And alone.
+  }
+}
+
+# Build each test as a standalone binary meant to be run by runtests.
+foreach(test_name, core_tests) {
+  test(test_name) {
+    test_group = "core"
+    deps = [
+      test_name,
+    ]
+  }
+}
+
+# Now build all of those (and more) together into the standalone core-tests
+# binary.  This can and must be run directly from userboot because it
+# requires the root resource handle but no system services whatsoever.
+test("standalone") {
+  test_group = "core"
+  deps = core_tests + unified_only
+  sources = [
+    "main.c",
+  ]
+  deps += [
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zxtest",
+  ]
+}
+
+# Make that into a bootable ZBI with just the kernel.
+zbi_test("core-tests") {
+  assert(current_cpu != "")
+
+  args = [ "userboot=test/core/standalone-test" ]
+  deps = [
+    ":standalone",
+    "$zx/kernel",
+  ]
+  assert_no_deps = [
+    "$zx/system/core/*",
+    "$zx/system/dev/*",
+  ]
+
+  # TODO(mcgrathr): The zircon.py recipe depends on this exact file name.
+  # Remove this and let it use the defaults when infra is only using the
+  # build API metadata to find the ZBI file.
+  output_dir = root_build_dir
+  output_name = "core-tests-$current_cpu"
+}

@@ -1,0 +1,21 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("gpt") {
+  sources = [
+    "cros.cc",
+    "gpt.cc",
+    "guid.cc",
+  ]
+  public_deps = [
+    # <gpt/gpt.h> has #include <fbl/unique_ptr.h>.
+    "$zx/system/ulib/fbl:headers",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-hardware-block:c",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/zircon",
+    "$zx/third_party/ulib/cksum",
+  ]
+}

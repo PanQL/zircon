@@ -1,0 +1,74 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("ddk") {
+  sdk = "static"
+  sdk_publishable = true
+  sdk_headers = [
+    "ddk/metadata/bad-block.h",
+    "ddk/metadata/buttons.h",
+    "ddk/metadata/camera.h",
+    "ddk/metadata/gpt.h",
+    "ddk/metadata/nand.h",
+    "ddk/protocol/auxdata.h",
+    "ddk/trace/event.h",
+    "ddk/binding.h",
+    "ddk/debug.h",
+    "ddk/device.h",
+    "ddk/driver.h",
+    "ddk/io-buffer.h",
+    "ddk/metadata.h",
+    "ddk/mmio-buffer.h",
+    "ddk/phys-iter.h",
+    "ddk/physiter.h",
+    "ddk/platform-defs.h",
+    "ddk/protodefs.h",
+    "hw/arch_ops.h",
+    "hw/inout.h",
+    "hw/pci.h",
+    "hw/reg.h",
+    "hw/sdhci.h",
+    "hw/sdio.h",
+    "hw/sdmmc.h",
+  ]
+  sources = [
+    "io-buffer.c",
+    "mmio-buffer.c",
+    "phys-iter.c",
+  ]
+  public_deps = [
+    # <ddk/io-buffer.h> has #include <zircon/syscalls.h>.
+    "$zx/system/ulib/zircon:headers",
+
+    # <ddk/protocol/rawnand.h> has #include <fuchsia/hardware/nand/c/fidl.h>.
+    "$zx/system/fidl/fuchsia-hardware-nand:c.headers",
+
+    # <ddk/usb-peripheral-config.h> has #include <fuchsia/hardware/usb/peripheral/c/fidl.h>.
+    "$zx/system/fidl/fuchsia-hardware-usb-peripheral:c.headers",
+
+    # TODO(BLD-353): Exporting this dependency causes problems in the legacy
+    # build.  Instead, users of the ddk library that actually use this header
+    # have to also express a dependency on the trace library.
+    # <ddk/trace/event.h> has #include <trace/internal/event_common.h>.
+    #"$zx/system/ulib/trace:headers",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  deps = [
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+  ]
+}
+
+test("ddk-unittest") {
+  sources = [
+    "test/phys-iter-test.cc",
+  ]
+  deps = [
+    ":ddk",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zxtest",
+  ]
+}

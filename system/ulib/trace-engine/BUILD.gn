@@ -1,0 +1,123 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Three copies of libtrace-engine are built:
+# 1) Shared library for use by userspace tracing.
+# 2) Static library for use by userspace tracing.
+# 3) Static library to be linked into libdriver.so for use by driver tracing.
+#
+# N.B. Please DO NOT use (2) unless you KNOW you need to. Generally you do not.
+# If in doubt, ask. (2) is for very special circumstances where
+# libtrace-engine.so is not available.
+
+trace_engine_headers = [
+  # buffer_internal.h is not here on purpose.
+  "lib/trace-engine/context.h",
+  "lib/trace-engine/fields.h",
+  "lib/trace-engine/handler.h",
+  "lib/trace-engine/instrumentation.h",
+  "lib/trace-engine/types.h",
+]
+
+trace_engine_header_deps = [
+  # <trace-engine/handler.h> has #include <lib/async/dispatcher.h>.
+  "$zx/system/ulib/async:headers",
+]
+
+template("trace_engine_library") {
+  library(target_name) {
+    forward_variables_from(invoker, "*")
+
+    configs += [ "$zx/public/gn/config:visibility_hidden" ]
+    if (defined(extra_configs)) {
+      configs += extra_configs
+    }
+
+    sdk_headers = trace_engine_headers
+    public_deps = trace_engine_header_deps
+
+    sources = [
+      "context.cc",
+      "context_api.cc",
+      "context_impl.h",
+      "engine.cc",
+      "hash_table.h",
+      "nonce.cc",
+    ]
+    deps = [
+      "$zx/system/ulib/async:async-cpp",
+      "$zx/system/ulib/fbl",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zx",
+    ]
+  }
+}
+
+# The default version for the normal case.
+trace_engine_library("trace-engine") {
+  sdk = "shared"
+  sdk_publishable = true
+  extra_configs = [ "$zx/public/gn/config:static-libc++" ]
+  shared = true
+  static = false
+}
+
+# A special version for programs and shared libraries that can't use
+# libtrace-engine.so, e.g., because it is unavailable.
+# N.B. Please verify that you really need this before using it.
+# Generally you DO NOT want to use this.
+trace_engine_library("trace-engine-static") {
+  sdk = "static"
+  defines = [ "STATIC_LIBRARY" ]
+}
+
+# And again, but this time for drivers.
+# This gets linked into libdriver.so.
+trace_engine_library("trace-engine-driver") {
+  sdk = "static"
+  defines = [ "DDK_TRACING" ]
+}
+
+# Header-only source package for use by trace-provider:handler,
+# which is engine-agnostic.
+library("trace-engine-headers-for-handler") {
+  sdk = "source"
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  sdk_headers = trace_engine_headers
+  public_deps = trace_engine_header_deps
+  sources = []
+}
+
+# Header-only source package for use by exported trace-reader package.
+# This code also runs on the host.
+library("trace-engine-headers-for-reader") {
+  sdk = "source"
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  host = true
+  sdk_headers = [
+    "lib/trace-engine/fields.h",
+    "lib/trace-engine/types.h",
+  ]
+  sources = []
+}
+
+group("tests") {
+  testonly = true
+  deps = [
+    ":hash-table-test",
+  ]
+}
+
+test("hash-table-test") {
+  visibility = [ ":*" ]
+  output_name = "trace-engine-hash-table-test"
+  sources = [
+    "hash_table.h",
+    "tests/hash_table_test.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zxtest",
+  ]
+}

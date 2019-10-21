@@ -1,0 +1,50 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+
+  deps = [
+    ":ftl-volume-wrapper",
+    ":nand-volume-driver",
+  ]
+}
+
+source_set("common") {
+  testonly = true
+
+  sources = [
+    "fake-nand-interface.cc",
+  ]
+
+  deps = [
+    "$zx/system/ulib/mtd:headers",
+  ]
+}
+
+test("nand-volume-driver") {
+  sources = [
+    "nand-volume-driver-tests.cc",
+  ]
+
+  deps = [
+    ":common",
+    "$zx/system/ulib/ftl-mtd",
+    "$zx/system/ulib/mtd",
+    "$zx/system/ulib/zxtest",
+  ]
+}
+
+test("ftl-volume-wrapper") {
+  sources = [
+    "ftl-volume-wrapper-tests.cc",
+  ]
+
+  deps = [
+    "$zx/system/ulib/ftl-mtd",
+    "$zx/system/ulib/fvm-host",
+    "$zx/system/ulib/mtd",
+    "$zx/system/ulib/zxtest",
+  ]
+}

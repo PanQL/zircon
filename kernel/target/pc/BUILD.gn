@@ -1,0 +1,15 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("pc") {
+  deps = [
+    "$zx/kernel/dev/intel_rng",
+    "$zx/kernel/platform/pc",
+  ]
+
+  # Also build the Multiboot trampoline to support legacy boot loaders.
+  data_deps = [
+    "multiboot",
+  ]
+}

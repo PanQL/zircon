@@ -1,0 +1,55 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("dev") {
+  testonly = true
+  deps = [
+    "$zx/system/dev/test/bind-fail-test",
+    "$zx/system/dev/test/ddk-test",
+    "$zx/system/ulib/ddktl:ddktl-test",
+    "$zx/third_party/dev/ethernet/e1000",
+    "audio",
+    "backlight",
+    "block",
+    "bluetooth",
+    "board",
+    "bus",
+    "clk",
+    "codec",
+    "display",
+    "ethernet",
+    "fw",
+    "gpio",
+    "gpu",
+    "i2c",
+    "input",
+    "light",
+    "light-sensor",
+    "misc",
+    "mlg",
+    "nand",
+    "pci",
+    "power",
+    "rtc",
+    "sample",
+    "scpi",
+    "serial",
+    "spi",
+    "sysmem",
+    "tee",
+
+    # test/ allows drivers to be used by IsolateDevmgr
+    "test/ddk-runcompatibilityhook:ddk-runcompatibilityhook-test",
+    "test/ddk-runcompatibilityhook:ddk-runcompatibilityhook-test-child",
+    "test/fidl-llcpp-driver",
+    "test/isolateddevmgr:isolateddevmgr-test",
+    "test/mock-device",
+    "test/sysdev",
+    "test/unit-test-test:unit-test-fail",
+    "test/unit-test-test:unit-test-pass",
+    "thermal",
+    "usb",
+    "virtual_camera",
+  ]
+}

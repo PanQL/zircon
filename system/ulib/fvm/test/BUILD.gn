@@ -1,0 +1,32 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+  deps = [
+    ":fvm-unit",
+  ]
+}
+
+test("fvm-unit") {
+  sources = [
+    "integrity-validation-test.cc",
+    "format-info-test.cc",
+    "partition-entry-test.cc",
+    "slice-entry-test.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fvm",
+    "$zx/system/ulib/zxtest",
+  ]
+  if (is_fuchsia) {
+    sources += [ "client-test.cc" ]
+    deps += [
+      "$zx/system/ulib/block-client",
+      "$zx/system/ulib/fdio",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zx",
+    ]
+  }
+}

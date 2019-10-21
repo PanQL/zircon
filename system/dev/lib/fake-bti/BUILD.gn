@@ -1,0 +1,21 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("fake-bti") {
+  sdk = "shared"
+  sdk_headers = [ "lib/fake-bti/bti.h" ]
+  testonly = true
+  shared = true
+  sources = [
+    "fake-bti.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zx",
+  ]
+  configs += [ "$zx/public/gn/config:static-libc++" ]
+}

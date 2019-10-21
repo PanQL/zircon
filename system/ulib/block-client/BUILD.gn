@@ -1,0 +1,48 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("block-client") {
+  sources = [
+    "client.c",
+    "client.cc",
+    "remote-block-device.cc",
+  ]
+  public_deps = [
+    # <block-client/cpp/client.h> has #include <lib/zx/fifo.h>.
+    "$zx/system/ulib/zx:headers",
+
+    # <block-client/cpp/block-device.h> has #include <.../fidl.h>
+    "$zx/system/fidl/fuchsia-device:c",
+    "$zx/system/fidl/fuchsia-hardware-block:c",
+    "$zx/system/fidl/fuchsia-hardware-block-volume:c",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  deps = [
+    "$zx/system/fidl/fuchsia-io:c",
+    "$zx/system/ulib/ddk:headers",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+library("fake-device") {
+  testonly = true
+  sources = [
+    "fake-device.cc",
+  ]
+  public_deps = [
+    ":block-client",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/range",
+    "$zx/system/ulib/zx",
+  ]
+  deps = [
+    "$zx/system/ulib/fvm",
+    "$zx/system/ulib/zxtest",
+  ]
+}

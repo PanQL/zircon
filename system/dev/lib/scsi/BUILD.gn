@@ -1,0 +1,45 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("scsi") {
+  sdk_headers = [
+    "scsi/scsilib.h",
+    "scsi/scsilib_controller.h",
+  ]
+  sources = [
+    "scsilib.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.block",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/driver",
+  ]
+  public_deps = [
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/driver",
+  ]
+}
+
+test("scsilib-disk-test") {
+  sources = [
+    "scsilib-disk-test.cc",
+  ]
+  deps = [
+    ":scsi",
+    "$zx/system/banjo/ddk.protocol.block",
+    "$zx/system/dev/lib/fake-bti",
+    "$zx/system/dev/lib/fake_ddk",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/driver",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fit",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zxtest",
+  ]
+}

@@ -1,0 +1,35 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("hikey-display") {
+  sources = [
+    "adv7533.cc",
+    "ddk-interface.cc",
+    "edid.cc",
+    "hi3660-dsi.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.display.controller",
+    "$zx/system/banjo/ddk.protocol.dsiimpl",
+    "$zx/system/banjo/ddk.protocol.gpio",
+    "$zx/system/banjo/ddk.protocol.i2c",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.sysmem",
+    "$zx/system/dev/lib/device-protocol-i2c",
+    "$zx/system/dev/lib/device-protocol-platform-device",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/edid",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/hwreg",
+    "$zx/system/ulib/mipi-dsi",
+    "$zx/system/ulib/pretty",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zx",
+  ]
+}

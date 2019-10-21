@@ -1,0 +1,274 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/kernel/syscalls/abigen.gni")
+import("$zx/public/gn/toolchain/environment_redirect.gni")
+
+# The vDSO can't be built with instrumentation.
+exclude_tags = [ "instrumented" ]
+
+# References from instrumented variants just redirect.  This prevents extra
+# abigen runs in other toolchains just to get identical generated headers.
+if (toolchain.tags + exclude_tags - exclude_tags != toolchain.tags ||
+    toolchain.environment != "user") {
+  environment_redirect("headers") {
+    environment_label = "$zx/public/gn/toolchain:user"
+    direct = true
+    shlib = true
+    exclude_variant_tags = exclude_tags
+    deps = [
+      ":headers",
+    ]
+  }
+  if (toolchain.base_environment == "user") {
+    # Instrumented variants, and all variants of derived environments,
+    # link against the uninstrumented library.
+    environment_redirect("zircon") {
+      environment_label = "$zx/public/gn/toolchain:user"
+      direct = true
+      shlib = true
+      exclude_variant_tags = exclude_tags
+      deps = [
+        ":zircon",
+      ]
+    }
+  } else {
+    # References from other environments only get the headers.  This
+    # makes it easy to have "$zx/system/ulib/zircon" deps in common
+    # libraries that need to link against it in userland but that in
+    # other contexts like kernel or userboot are just using the headers.
+    group("zircon") {
+      public_deps = [
+        ":headers",
+      ]
+    }
+  }
+} else {
+  # TODO(mcgrathr): Rename the source files and the abigen switch.
+  if (zircon_cpu == "x86") {
+    zircon_cpu = "x86-64"
+    abigen_cpu = "x86"
+  } else if (zircon_cpu == "arm64") {
+    abigen_cpu = "arm"
+  }
+
+  library("zircon") {
+    shared = true
+    static = false
+
+    # The vDSO is never installed as a file, only baked into the kernel.
+    install_path = false
+
+    sources = [
+      "data.S",
+      "syscall-wrappers.cc",
+      "zx_cache_flush.cc",
+      "zx_channel_call.cc",
+      "zx_cprng_draw.cc",
+      "zx_deadline_after.cc",
+      "zx_status_get_string.cc",
+      "zx_system_get_dcache_line_size.cc",
+      "zx_system_get_features.cc",
+      "zx_system_get_num_cpus.cc",
+      "zx_system_get_physmem.cc",
+      "zx_system_get_version.cc",
+      "zx_ticks_get.cc",
+      "zx_ticks_per_second.cc",
+    ]
+
+    configs += [ ":config" ]
+    deps = [
+      ":generate",
+      ":syscall-asm",
+      "$zx/kernel/lib/userabi:headers",
+    ]
+    public_deps = [
+      ":generated-public-headers",
+    ]
+
+    # Instruct the linker to preserve the hidden alternate entry points.
+    # Note, "./" makes GN realize this is a file rather than a -l switch.
+    libs = [ "./alternates.ld" ]
+
+    # Set e_entry so _zx_process_exit is easy to find without reading .dynsym.
+    ldflags = [ "-Wl,-e,_zx_process_exit" ]
+
+    # This doesn't get normal default deps on libc.
+    no_implicit_deps = true
+
+    # This doesn't actually use libc++ at all, really (only header-only use
+    # would be safe).  But the compiler driver implicitly links it in, and by
+    # default with dynamic linking.  So it's crucial to tell it to link it in
+    # statically instead even though really we shouldn't get it at all.  We
+    # don't just use `-nostdlib++` because we still want the header access.
+    configs += [ "$zx/public/gn/config:static-libc++" ]
+
+    # TODO(BLD-353): The SDK exports this as part of the sysroot rather
+    # than as an independent library.  Legacy integration likewise does not
+    # use a //zircon/public/lib/zircon buts instead uses libs=["zircon"].
+    # See //zircon/public/sysroot.
+    #
+    # The stripped binary doesn't even have section headers, so the linker
+    # can't handle it.  Eventually we'll have linker stubs.  For now, just
+    # use the unstripped library to link against.  (In the case of the vDSO
+    # we don't really need to strip it in the first place, since its
+    # segments are embedded in the kernel and the stripped file is never
+    # put on a device.  But there's no reasonable way to disable the
+    # standard stripping behavior for a single target.)  The legacy build
+    # needs there to be a -L directory where libzircon.so is the name to
+    # link against so -lzircon works.  So mock up such a directory using a
+    # linker script to redirect to the actual unstripped file name, which
+    # is not that.
+    link_file = "$target_gen_dir/libzircon.so"
+    debug_file = rebase_path("$target_out_dir/libzircon.so.debug")
+    write_file(link_file, [ "INPUT($debug_file)" ])
+    metadata = {
+      legacy_sysroot = [
+        {
+          vdso =
+              rebase_path("$target_out_dir/libzircon.so.debug", root_build_dir)
+        },
+        {
+          include_dirs = rebase_path([
+                                       "include",
+                                       root_gen_dir,
+                                     ],
+                                     root_build_dir)
+        },
+        {
+          sdk = {
+            include_dir = rebase_path(root_gen_dir, root_build_dir)
+            headers = [
+              "zircon/syscalls/definitions.h",
+              # Note not included in SDK: "zircon/syscalls/definitions.rs",
+            ]
+          }
+        },
+        {
+          sdk = {
+            include_dir = rebase_path("include", root_build_dir)
+            headers = [ "zircon/status.h" ]
+          }
+        },
+        {
+          sdk = {
+            source = rebase_path("$target_out_dir/libzircon.so.debug",
+                                 root_build_dir)
+            link = "lib/libzircon.so"
+          }
+        },
+        {
+          sdk = {
+            source = rebase_path("$target_out_dir/libzircon.so.debug",
+                                 root_build_dir)
+            debug = "debug/libzircon.so"
+          }
+        },
+      ]
+
+      # TODO(BLD-353): This is not actually for the SDK (see above).  This
+      # is special-cased so no //zircon/public/lib/zircon gets made, but
+      # //build/config/fuchsia:compiler_sysroot can look up the metadata to
+      # find the right lib_dirs.
+      legacy_barrier = []
+      legacy_targets = [
+        {
+          _label = get_label_info(":$target_name", "label_with_toolchain")
+          _zircon_public = "lib"
+          target_name = "zircon"
+          libs = []
+          libs = [ rebase_path(link_file, root_build_dir) ]
+        },
+      ]
+
+      # This library is on the allowlist for driver() shared library deps.
+      # It doesn't cause driver-denylist-check.sh to fail, and it prunes the
+      # metadata walk here so our own deps are not subject to the check.
+      driver_shlib_denylist = []
+      driver_shlib_denylist_barrier = []
+    }
+  }
+
+  # Everything with ":config" in configs needs ":generate" in deps.
+  config("config") {
+    visibility = [ ":*" ]
+
+    # This library should not depend on libc.
+    configs = [
+      "$zx/public/gn/config:freestanding",
+      "$zx/public/gn/config:no_sanitizers",
+      "$zx/public/gn/config:rodso",
+    ]
+
+    include_dirs = [ target_gen_dir ]
+  }
+
+  source_set("syscall-asm") {
+    sources = [
+      "syscalls-$zircon_cpu.S",
+      "zx_futex_wake_handle_close_thread_exit-$zircon_cpu.S",
+      "zx_vmar_unmap_handle_close_thread_exit-$zircon_cpu.S",
+    ]
+    configs += [ ":config" ]
+    deps = [
+      ":generate",
+      "$zx/kernel/syscalls:syscall-abi",
+    ]
+    if (toolchain.base_environment == "user") {
+      configs -= [ "$zx/public/gn/config:user" ]
+    }
+  }
+
+  group("generated-public-headers") {
+    public_configs = [ ":generated-public-headers.config" ]
+    deps = [
+      ":generate",
+    ]
+  }
+
+  config("generated-public-headers.config") {
+    visibility = [ ":generated-public-headers" ]
+    include_dirs = [ root_gen_dir ]
+  }
+
+  abigen("generate") {
+    visibility = [ ":*" ]
+    gen = [
+      # These are the public headers.
+      {
+        args = [ "-user-header" ]
+        outputs = [
+          "$root_gen_dir/zircon/syscalls/definitions.h",
+        ]
+      },
+      {
+        args = [ "-rust" ]
+        outputs = [
+          "$root_gen_dir/zircon/syscalls/definitions.rs",
+        ]
+      },
+
+      # TODO(mcgrathr): Drop the zircon/ prefix from the remaining files.
+      # These are private.
+      {
+        args = [ "-vdso-header" ]
+        outputs = [
+          "$target_gen_dir/zircon/syscall-vdso-definitions.h",
+        ]
+      },
+      {
+        args = [ "-vdso-wrappers" ]
+        outputs = [
+          "$target_gen_dir/zircon/syscall-vdso-wrappers.inc",
+        ]
+      },
+      {
+        args = [ "-${abigen_cpu}-asm" ]
+        outputs = [
+          "$target_gen_dir/zircon/syscalls-$zircon_cpu.S",
+        ]
+      },
+    ]
+  }
+}

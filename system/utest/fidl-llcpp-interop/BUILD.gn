@@ -1,0 +1,61 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/public/gn/fidl.gni")
+
+# This file will evaluated in $default_toolchain when processing the
+# fidl_library() invocations below.  But that toolchain doesn't support
+# compiling targets, so don't define the actual target there.
+if (current_toolchain != default_toolchain) {
+  test("fidl-llcpp-interop") {
+    sources = [
+      "basictypes_tests.cc",
+      "controlflow_tests.cc",
+      "dirent_tests.cc",
+      "generated/fidl_llcpp_basictypes.cc",
+      "generated/fidl_llcpp_controlflow.cc",
+      "generated/fidl_llcpp_dirent.cc",
+    ]
+    include_dirs = [ "generated" ]
+    deps = [
+      ":fidl.test.llcpp.basictypes.c",
+      ":fidl.test.llcpp.controlflow.c",
+      ":fidl.test.llcpp.dirent.c",
+      "$zx/system/ulib/async:async-cpp",
+      "$zx/system/ulib/async:async-default",
+      "$zx/system/ulib/async-loop:async-loop-cpp",
+      "$zx/system/ulib/fbl",
+      "$zx/system/ulib/fdio",
+      "$zx/system/ulib/fidl",
+      "$zx/system/ulib/fidl:fidl-llcpp",
+      "$zx/system/ulib/fidl-async",
+      "$zx/system/ulib/fidl-async:fidl-async-cpp",
+      "$zx/system/ulib/fidl-utils",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zx",
+      "$zx/system/ulib/zxtest",
+    ]
+  }
+}
+
+fidl_library("fidl.test.llcpp.basictypes") {
+  visibility = [ ":*" ]
+  sources = [
+    "basictypes.fidl",
+  ]
+}
+
+fidl_library("fidl.test.llcpp.controlflow") {
+  visibility = [ ":*" ]
+  sources = [
+    "controlflow.fidl",
+  ]
+}
+
+fidl_library("fidl.test.llcpp.dirent") {
+  visibility = [ ":*" ]
+  sources = [
+    "dirent.fidl",
+  ]
+}

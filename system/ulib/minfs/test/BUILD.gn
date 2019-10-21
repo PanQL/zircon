@@ -1,0 +1,59 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+  deps = [
+    ":minfs-format-unit",
+    ":minfs-inspector-unit",
+    ":minfs-work-queue-unit",
+  ]
+}
+
+test("minfs-work-queue-unit") {
+  test_group = "fs"
+  sources = [
+    "work-queue-test.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-minfs:c",
+    "$zx/system/ulib/block-client",
+    "$zx/system/ulib/minfs",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zxtest",
+  ]
+  include_dirs = [ "$zx/system/ulib/minfs" ]
+}
+
+test("minfs-format-unit") {
+  test_group = "fs"
+  sources = [
+    "format-test.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/minfs",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zxtest",
+  ]
+  include_dirs = [ "$zx/system/ulib/minfs" ]
+}
+
+test("minfs-inspector-unit") {
+  test_group = "fs"
+  sources = [
+    "inspector-test.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-minfs:c",
+    "$zx/system/ulib/block-client",
+    "$zx/system/ulib/disk-inspector",
+    "$zx/system/ulib/minfs",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zxtest",
+  ]
+  include_dirs = [ "$zx/system/ulib/minfs" ]
+  configs += [ "$zx/public/gn/config:static-libc++" ]
+}

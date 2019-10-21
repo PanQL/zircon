@@ -1,0 +1,83 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("minfs") {
+  host = true
+  static = true
+  sources = [
+    "allocator/allocator-promise.cc",
+    "allocator/allocator.cc",
+    "allocator/inode-manager.cc",
+    "allocator/metadata.cc",
+    "allocator/storage.cc",
+    "bcache.cc",
+    "directory.cc",
+    "file.cc",
+    "fsck.cc",
+    "inspector.cc",
+    "metrics.cc",
+    "minfs.cc",
+    "superblock.cc",
+    "transaction-limits.cc",
+    "vnode.cc",
+    "writeback.cc",
+  ]
+  if (!is_fuchsia) {
+    sources += [ "host.cc" ]
+  }
+  public_deps = [
+    "$zx/system/ulib/bitmap:headers",
+    "$zx/system/ulib/disk-inspector:headers",
+    "$zx/system/ulib/fbl:headers",
+    "$zx/system/ulib/fs:headers",
+    "$zx/system/ulib/storage-metrics:headers",
+
+    # <minfs/bcache.h> has #include <fvm/client.h>.
+    "$zx/system/ulib/fvm:headers",
+  ]
+  deps = [
+    "$zx/system/ulib/bitmap",
+    "$zx/system/ulib/disk-inspector",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/storage-metrics",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/third_party/ulib/safemath",
+  ]
+  if (is_fuchsia) {
+    public_deps += [
+      "$zx/system/fidl/fuchsia-hardware-block:c",
+      "$zx/system/fidl/fuchsia-hardware-block-volume:c",
+      "$zx/system/ulib/block-client",
+      "$zx/system/ulib/fzl:headers",
+      "$zx/system/ulib/zx:headers",
+    ]
+    configs += [ "$zx/public/gn/config:visibility_hidden" ]
+    deps += [
+      "$zx/system/fidl/fuchsia-device:c",
+      "$zx/system/fidl/fuchsia-io:c",
+      "$zx/system/fidl/fuchsia-minfs:c",
+      "$zx/system/ulib/async",
+      "$zx/system/ulib/async:async-cpp",
+      "$zx/system/ulib/async:async-default",
+      "$zx/system/ulib/async-loop",
+      "$zx/system/ulib/async-loop:async-loop-cpp",
+      "$zx/system/ulib/fdio",
+      "$zx/system/ulib/fidl",
+      "$zx/system/ulib/fidl-utils",
+      "$zx/system/ulib/fvm",
+      "$zx/system/ulib/fzl",
+      "$zx/system/ulib/sync",
+      "$zx/system/ulib/trace",
+      "$zx/system/ulib/trace-engine",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zx",
+    ]
+    sources += [
+      "vnode-allocation.cc",
+      "work-queue.cc",
+      "writeback-async.cc",
+    ]
+  }
+}

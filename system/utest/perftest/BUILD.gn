@@ -1,0 +1,37 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+test("perftest") {
+  output_name = "perf-test"
+  sources = [
+    "clock-test.cc",
+    "handle-creation-test.cc",
+    "malloc-test.cc",
+    "memcpy-test.cc",
+    "mutex-test.cc",
+    "null-test.cc",
+    "object-wait-test.cc",
+    "results-test.cc",
+    "runner-test.cc",
+    "sleep-test.cc",
+    "syscalls-test.cc",
+    "timer-test.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async:async-default",
+    "$zx/system/ulib/async-loop",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/perftest",
+    "$zx/system/ulib/trace",
+    "$zx/system/ulib/trace-engine",
+    "$zx/system/ulib/trace-provider:trace-provider-with-fdio",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}

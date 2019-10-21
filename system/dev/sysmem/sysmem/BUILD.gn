@@ -1,0 +1,76 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("sysmem") {
+  sources = [
+    "allocator.cc",
+    "binding.cc",
+    "buffer_collection.cc",
+    "buffer_collection_token.cc",
+    "contiguous_pooled_system_ram_memory_allocator.cc",
+    "device.cc",
+    "driver.cc",
+    "koid_util.cc",
+    "logging.cc",
+    "logical_buffer_collection.cc",
+    "memory_allocator.cc",
+    "usage_pixel_format_cost.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.sysmem",
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/fidl-async-2",
+    "$zx/system/ulib/fidl-utils",
+    "$zx/system/ulib/fit",
+    "$zx/system/ulib/image-format",
+    "$zx/system/ulib/region-alloc",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+
+  # TODO(ZX-2863): This driver violates the allowed shlib deps policy.
+  deprecated_inhibit_driver_shlib_allowlist = true
+}
+
+test("sysmem-unittest") {
+  output_name = "sysmem-unittest"
+  sources = [
+    "contiguous_pooled_system_ram_memory_allocator.cc",
+    "memory_allocator.cc",
+    "test/contiguous_pooled_system_ram_memory_allocator_test.cc",
+    "test/pixel_format_cost_test.cc",
+    "usage_pixel_format_cost.cc",
+  ]
+  include_dirs = [ "." ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.sysmem",
+    "$zx/system/dev/lib/fake-bti",
+    "$zx/system/dev/lib/fake_ddk",
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/fidl-async-2",
+    "$zx/system/ulib/fidl-utils",
+    "$zx/system/ulib/fit",
+    "$zx/system/ulib/image-format",
+    "$zx/system/ulib/region-alloc",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/system/ulib/zxtest",
+  ]
+}

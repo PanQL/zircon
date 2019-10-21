@@ -1,0 +1,56 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("ahci") {
+  deps = [
+    ":shared",
+  ]
+}
+
+group("test") {
+  testonly = true
+  deps = [
+    ":ahci-unittest",
+  ]
+}
+
+test("ahci-unittest") {
+  output_name = "ahci-unittest"
+  sources = [
+    "test/fake-bus.cc",
+    "test/main.cc",
+  ]
+  deps = [
+    ":shared",
+    "$zx/system/banjo/ddk.protocol.block",
+    "$zx/system/dev/lib/fake-bti",
+    "$zx/system/dev/lib/fake_ddk",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/driver",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zxtest",
+  ]
+}
+
+source_set("shared") {
+  visibility = [ "./*" ]
+  sources = [
+    "controller.cc",
+    "pci-bus.cc",
+    "port.cc",
+    "sata.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.block",
+    "$zx/system/banjo/ddk.protocol.pci",
+    "$zx/system/dev/lib/device-protocol-pci",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}

@@ -1,0 +1,25 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("msm8x53-som") {
+  sources = [
+    "msm8x53-clock.cc",
+    "msm8x53-gpio.cc",
+    "msm8x53-pil.cc",
+    "msm8x53-power.cc",
+    "msm8x53-sdc1.cc",
+    "msm8x53.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/dev/lib/msm8x53",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/hwreg",
+  ]
+  data_deps = [
+    "$zx/kernel/target/arm64/boot-shim:msm8x53-som",
+  ]
+}

@@ -1,0 +1,16 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("gfx-font-data") {
+  kernel = true
+  static = true
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  public_deps = [
+    "$zx/system/ulib/gfx:headers",
+  ]
+  sources = [
+    "18x32.c",
+    "9x16.c",
+  ]
+}

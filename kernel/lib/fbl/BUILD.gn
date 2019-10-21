@@ -1,0 +1,32 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("fbl") {
+  kernel = true
+  sources = [
+    "arena.cc",
+  ]
+  deps = [
+    ":tests",
+    "$zx/kernel/vm:headers",
+  ]
+  public_deps = [
+    "$zx/system/ulib/fbl",
+  ]
+}
+
+source_set("tests") {
+  #TODO: testonly = true
+  visibility = [ ":*" ]
+  sources = [
+    "arena_tests.cc",
+    "inline_array_tests.cc",
+    "name_tests.cc",
+  ]
+
+  deps = [
+    ":headers",
+    "$zx/kernel/lib/unittest",
+  ]
+}

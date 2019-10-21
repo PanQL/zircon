@@ -1,0 +1,44 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("fs-management") {
+  sdk = "shared"
+  sdk_headers = [
+    "fs-management/fvm.h",
+    "fs-management/mount.h",
+  ]
+  shared = true
+  sources = [
+    "fsck.cc",
+    "fvm.cc",
+    "launch.cc",
+    "mkfs.cc",
+    "mount.cc",
+  ]
+  public_deps = [
+    "$zx/system/fidl/fuchsia-hardware-block-volume:c",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-hardware-block:c",
+    "$zx/system/fidl/fuchsia-hardware-block-partition:c",
+    "$zx/system/fidl/fuchsia-io:c",
+    "$zx/system/ulib/digest",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/fvm",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/gpt",
+    "$zx/system/ulib/pretty",
+    "$zx/system/ulib/zx",
+    "$zx/third_party/ulib/uboringssl",
+  ]
+  configs += [ "$zx/public/gn/config:static-libc++" ]
+
+  data_deps = [
+    "$zx/system/uapp/minfs",
+    "$zx/system/uapp/blobfs",
+    "$zx/third_party/uapp/mkfs-msdosfs",
+    "$zx/third_party/uapp/fsck-msdosfs",
+  ]
+}

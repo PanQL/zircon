@@ -1,0 +1,43 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("inspector") {
+  # This should only ever be used as a shared library because it hides
+  # the otherwise problematic ngunwind symbols.
+  shared = true
+  static = false
+
+  sdk = "shared"
+  sdk_headers = [ "inspector/inspector.h" ]
+  sources = [
+    "backtrace.cc",
+    "debug-info.cc",
+    "dso-list.cc",
+    "memory.cc",
+    "registers.cc",
+    "utils.cc",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  public_deps = [
+    "$zx/system/ulib/zircon:headers",
+  ]
+  deps = [
+    "$zx/system/ulib/backtrace-request:utils",
+    "$zx/system/ulib/elf-search",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/pretty",
+    "$zx/system/ulib/zircon",
+    "$zx/third_party/ulib/backtrace",
+    "$zx/third_party/ulib/ngunwind",
+  ]
+  configs += [ "$zx/public/gn/config:static-libc++" ]
+
+  # Compile this with frame pointers so that if we crash
+  # the simplistic unwinder will work.
+  if (configs + [ "$zx/public/gn/config:default_frame_pointers" ] -
+      [ "$zx/public/gn/config:default_frame_pointers" ] != configs) {
+    configs -= [ "$zx/public/gn/config:default_frame_pointers" ]
+    configs += [ "$zx/public/gn/config:frame_pointers" ]
+  }
+}

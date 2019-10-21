@@ -1,0 +1,41 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+  deps = [
+    ":cobalt-client-unit",
+  ]
+}
+
+test("cobalt-client-unit") {
+  sources = [
+    "cobalt_logger_test.cc",
+    "collector_test.cc",
+    "counter_test.cc",
+    "histogram_test.cc",
+    "in-memory-logger-test.cc",
+    "main.cc",
+    "metric_options_test.cc",
+    "timer_test.cc",
+    "types_internal_test.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-cobalt:c",
+    "$zx/system/fidl/fuchsia-io:c",
+    "$zx/system/fidl/fuchsia-mem:c",
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async:async-default",
+    "$zx/system/ulib/async-loop",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/cobalt-client",
+    "$zx/system/ulib/cobalt-client:in-memory-logger",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/fidl-utils",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zxtest",
+  ]
+}

@@ -1,0 +1,52 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("skip-block") {
+  sources = []
+  deps = [
+    ":common",
+  ]
+}
+
+source_set("common") {
+  sources = [
+    "logical-to-physical-map.cc",
+    "skip-block.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-hardware-nand:c",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+  public_deps = [
+    "$zx/system/banjo/ddk.protocol.badblock",
+    "$zx/system/banjo/ddk.protocol.nand",
+    "$zx/system/dev/lib/operation",
+    "$zx/system/fidl/fuchsia-hardware-skipblock:llcpp",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/zircon-internal",
+  ]
+}
+
+test("skip-block-test") {
+  output_name = "skip-block-test"
+  sources = [
+    "test/logical-to-physical-map-test.cc",
+    "test/skip-block-test.cc",
+  ]
+  include_dirs = [ "." ]
+  deps = [
+    ":common",
+    "$zx/system/dev/lib/fake_ddk",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/pretty",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zxtest",
+  ]
+}

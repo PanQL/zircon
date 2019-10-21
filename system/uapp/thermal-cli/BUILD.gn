@@ -1,0 +1,47 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("thermal-cli") {
+  sources = [
+    "main.cc",
+  ]
+  deps = [
+    ":common",
+    "$zx/system/fidl/fuchsia-hardware-thermal:c",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+source_set("common") {
+  sources = [
+    "thermal-cli.cc",
+    "thermal-cli.h",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-hardware-thermal:c",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+test("thermal-cli-test") {
+  output_name = "thermal-cli-test"
+  sources = [
+    "test/thermal-cli-test.cc",
+  ]
+  include_dirs = [ "." ]
+  deps = [
+    ":common",
+    "$zx/system/fidl/fuchsia-hardware-thermal:c",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fidl-utils",
+    "$zx/system/ulib/mock-function",
+    "$zx/system/ulib/zxtest",
+  ]
+}

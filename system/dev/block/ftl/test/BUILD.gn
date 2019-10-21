@@ -1,0 +1,55 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+  deps = [
+    ":ftl",
+    ":ftl-integration",
+  ]
+}
+
+test("ftl") {
+  sources = [
+    "block_device_test.cc",
+    "driver-test.cc",
+    "ftl-shell.cc",
+    "ftl-test.cc",
+    "nand_driver_test.cc",
+    "nand_operation_test.cc",
+    "ndm-ram-driver.cc",
+    "oob_doubler_test.cc",
+  ]
+  include_dirs = [ "$zx/system/dev/block/ftl" ]
+  deps = [
+    "$zx/system/dev/block/ftl:common",
+    "$zx/system/dev/lib/fake_ddk",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zxtest",
+  ]
+}
+
+test("ftl-integration") {
+  sources = [
+    "ftl_integration_test.cc",
+    "ftl_test_observer.cc",
+    "integration_main.cc",
+    "launch.cc",
+  ]
+  include_dirs = [ "$zx/system/dev/block/ftl" ]
+  deps = [
+    "$zx/system/fidl/fuchsia-hardware-block:c",
+    "$zx/system/fidl/fuchsia-hardware-nand:c",
+    "$zx/system/ulib/devmgr-integration-test",
+    "$zx/system/ulib/devmgr-launcher",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/launchpad",
+    "$zx/system/ulib/ramdevice-client",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/system/ulib/zxtest",
+  ]
+}

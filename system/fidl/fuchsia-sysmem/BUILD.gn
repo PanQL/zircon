@@ -1,0 +1,22 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/public/gn/fidl.gni")
+
+fidl_library("fuchsia-sysmem") {
+  sdk = true
+  sources = [
+    "allocator.fidl",
+    "collection.fidl",
+    "collections_deprecated.fidl",
+    "constraints.fidl",
+    "driver_connector.fidl",
+    "format_modifier.fidl",
+    "formats_deprecated.fidl",
+    "heap.fidl",
+    "image_formats.fidl",
+    "image_formats_deprecated.fidl",
+    "usages.fidl",
+  ]
+}

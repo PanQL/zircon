@@ -1,0 +1,45 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("vim-display") {
+  sources = [
+    "edid.cc",
+    "hdmitx.cc",
+    "hdmitx_clk.cc",
+    "registers.cc",
+    "vim-audio-utils.cc",
+    "vim-audio.cc",
+    "vim-display.cc",
+    "vim-spdif-audio-stream.cc",
+    "vpp.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.amlogiccanvas",
+    "$zx/system/banjo/ddk.protocol.composite",
+    "$zx/system/banjo/ddk.protocol.display.controller",
+    "$zx/system/banjo/ddk.protocol.gpio",
+    "$zx/system/banjo/ddk.protocol.i2cimpl",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.sysmem",
+    "$zx/system/dev/audio/lib/simple-audio-stream",
+    "$zx/system/dev/lib/amlogic",
+    "$zx/system/dev/lib/device-protocol-platform-device",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/fidl/fuchsia-sysmem:c",
+    "$zx/system/ulib/audio-driver-proto",
+    "$zx/system/ulib/audio-proto-utils",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/digest",
+    "$zx/system/ulib/dispatcher-pool",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/hwreg",
+    "$zx/system/ulib/image-format",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/third_party/ulib/uboringssl",
+  ]
+}

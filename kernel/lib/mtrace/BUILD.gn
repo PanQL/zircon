@@ -1,0 +1,22 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_kernel)
+
+library("mtrace") {
+  kernel = true
+  sources = [
+    "mtrace-ipt.cc",
+    "mtrace-pmu.cc",
+    "mtrace.cc",
+  ]
+  deps = [
+    "$zx/kernel/lib/perfmon:headers",
+    "$zx/kernel/object",
+  ]
+  public_deps = [
+    # <lib/mtrace.h> has #include <lib/user_copy/user_ptr.h>
+    "$zx/kernel/lib/user_copy:headers",
+  ]
+}

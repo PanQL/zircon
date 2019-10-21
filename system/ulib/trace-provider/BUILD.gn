@@ -1,0 +1,187 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Four copies of libtrace-provider are built:
+# (1) trace-provider: Main version that is used by non-drivers.
+#     This copy uses libtrace-engine.so.
+# (2) trace-provider-so: Same as trace-provider, but exported to SDK
+#     as a shared library. This copy uses libtrace-engine.so.
+# (3) trace-provider-with-static-engine: For cases where a statically linked
+#     trace-engine is needed. This is for very special cases. Please DO NOT
+#     use this unless you KNOW you need to. Generally you do not. If in doubt,
+#     ask.
+# (4) trace-provider-driver: This copy is for use by libdriver.so for the DDK.
+
+template("trace_provider_library") {
+  library(target_name) {
+    forward_variables_from(invoker, "*")
+
+    configs += [ "$zx/public/gn/config:visibility_hidden" ]
+    if (defined(extra_configs)) {
+      configs += extra_configs
+    }
+
+    # Not including fdio_connect.h.
+    if (!defined(sdk_headers)) {
+      sdk_headers = []
+    }
+    sdk_headers += [
+      "lib/trace-provider/handler.h",
+      "lib/trace-provider/provider.h",
+    ]
+
+    # Header dependencies, not including the trace engine.
+    # <trace-provider/handler.h> has #include <trace-engine/handler.h>.
+    if (!defined(public_deps)) {
+      public_deps = []
+    }
+    public_deps += [
+      # <trace-provider/provider.h> has #include <lib/async/dispatcher.h>.
+      "$zx/system/ulib/async:headers",
+
+      # <trace-provider/provider.h> has #include <lib/zx/channel.h>.
+      "$zx/system/ulib/zx:headers",
+    ]
+
+    if (!defined(sources)) {
+      sources = []
+    }
+    sources += [
+      "export.h",
+      "fnv1hash.h",
+      "handler.cc",
+      "provider_impl.cc",
+      "provider_impl.h",
+      "session.cc",
+      "session.h",
+      "utils.cc",
+      "utils.h",
+    ]
+
+    # Source dependencies, not including the trace engine.
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [
+      "$zx/system/fidl/fuchsia-tracing-provider:c",
+      "$zx/system/ulib/async:async-cpp",
+      "$zx/system/ulib/fidl",
+      "$zx/system/ulib/zx",
+    ]
+  }
+}
+
+trace_provider_fdio_connect_sources = [ "fdio_connect.cc" ]
+
+trace_provider_fdio_sources = [
+  "fdio_connect.cc",
+  "provider_with_fdio.cc",
+]
+
+trace_provider_fdio_connect_source_deps = [
+  "$zx/system/ulib/fdio",
+  "$zx/system/ulib/zx",
+]
+
+trace_provider_fdio_connect_headers = [ "lib/trace-provider/fdio_connect.h" ]
+
+# The default version for the normal case.
+trace_provider_library("trace-provider") {
+  sdk = "source"
+  sdk_headers = trace_provider_fdio_connect_headers
+  public_deps = [
+    "$zx/system/ulib/trace-engine:headers",
+  ]
+  sources = trace_provider_fdio_sources
+  deps = trace_provider_fdio_connect_source_deps
+  deps += [ "$zx/system/ulib/trace-engine" ]
+}
+
+# Shared version for the SDK.
+# The issue is that the SDK doesn't (yet) support generating C FIDL bindings at
+# build time, which we need if we export as "source", and since we're
+# implemented in C++ we can't export as "static".
+# TODO(PT-220): The name here is temporary, pending being able to build
+# the library as "libtrace-provider.so".
+trace_provider_library("trace-provider-so") {
+  sdk_publishable = true
+  sdk = "shared"
+  shared = true
+  static = false
+  extra_configs = [ "$zx/public/gn/config:static-libc++" ]
+  defines = [ "SHARED_LIBRARY" ]
+  sdk_headers = trace_provider_fdio_connect_headers
+  public_deps = [
+    "$zx/system/ulib/trace-engine:headers",
+  ]
+  sources = trace_provider_fdio_sources
+  deps = trace_provider_fdio_connect_source_deps
+  deps += [ "$zx/system/ulib/trace-engine" ]
+}
+
+# Same as trace-provider.
+# TODO(PT-199): Since this is now an alias of trace-provider, delete.
+trace_provider_library("trace-provider-with-fdio") {
+  sdk = "source"
+  sdk_headers = trace_provider_fdio_connect_headers
+  public_deps = [
+    "$zx/system/ulib/trace-engine:headers",
+  ]
+  sources = trace_provider_fdio_sources
+  deps = trace_provider_fdio_connect_source_deps
+  deps += [ "$zx/system/ulib/trace-engine" ]
+}
+
+# A special version for programs and shared libraries that can't use
+# libtrace-engine.so, e.g., because it is unavailable.
+# N.B. Please verify that you really need this before using it.
+# Generally you DO NOT want to use this.
+trace_provider_library("trace-provider-with-static-engine") {
+  sdk = "static"
+  sdk_headers = trace_provider_fdio_connect_headers
+  public_deps = [
+    "$zx/system/ulib/trace-engine:trace-engine-static.headers",
+  ]
+  sources = trace_provider_fdio_sources
+  deps = trace_provider_fdio_connect_source_deps
+  deps += [ "$zx/system/ulib/trace-engine:trace-engine-static" ]
+}
+
+# Version for the DDK.
+trace_provider_library("trace-provider-driver") {
+  public_deps = [
+    "$zx/system/ulib/trace-engine:trace-engine-driver.headers",
+  ]
+  deps = [
+    "$zx/system/ulib/trace-engine:trace-engine-driver",
+  ]
+}
+
+# For apps that use the trace engine, but not via a trace provider.
+# These are usually test and benchmarking apps.
+# Normal apps are not expected to use this.
+library("trace-handler") {
+  sdk = "static"
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  sdk_headers = [ "lib/trace-provider/handler.h" ]
+  public_deps = [
+    # It is up to the client to choose which engine (shared, static),
+    # just reference the headers here.
+    "$zx/system/ulib/trace-engine:trace-engine-headers-for-handler",
+  ]
+  sources = [
+    "handler.cc",
+  ]
+}
+
+# A helper library for clients that want to use fdio to connect to
+# trace manager, outside of the regular libraries.
+# This is for special cases where the client is choosing its engine separately.
+library("trace-provider-fdio-connect") {
+  sdk = "static"
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  sdk_headers = trace_provider_fdio_connect_headers
+  sources = trace_provider_fdio_connect_sources
+  deps = trace_provider_fdio_connect_source_deps
+}

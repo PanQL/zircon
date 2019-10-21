@@ -1,0 +1,49 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("disk-pave") {
+  deps = [
+    ":install-disk-image",
+  ]
+}
+
+executable("install-disk-image") {
+  sources = [
+    "disk-pave.cc",
+    "payload-streamer.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-paver:c",
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fidl-utils",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/paver",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+test("install-disk-image-test") {
+  output_name = "install-disk-image-test"
+  sources = [
+    "payload-streamer.cc",
+    "test/payload-streamer-test.cc",
+  ]
+  include_dirs = [ "." ]
+  deps = [
+    "$zx/system/fidl/fuchsia-paver:c",
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/async-loop",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fidl-utils",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/system/ulib/zxtest",
+  ]
+}

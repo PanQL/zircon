@@ -1,0 +1,42 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tests") {
+  # TODO: testonly = true
+  cflags = [ "-fno-builtin" ]
+  sources = [
+    "alloc_checker_tests.cc",
+    "benchmarks.cc",
+    "brwlock_tests.cc",
+    "cache_tests.cc",
+    "clock_tests.cc",
+    "dpc_tests.cc",
+    "fibo.cc",
+    "lock_dep_tests.cc",
+    "mem_tests.cc",
+    "mmu_tests.cc",
+    "mp_hotplug_tests.cc",
+    "pi_tests.cc",
+    "popcount.cc",
+    "pow2_tests.cc",
+    "preempt_disable_tests.cc",
+    "printf_tests.cc",
+    "resource_tests.cc",
+    "sleep_tests.cc",
+    "string_tests.cc",
+    "sync_ipi_tests.cc",
+    "tests.cc",
+    "thread_tests.cc",
+    "timer_tests.cc",
+    "uart_tests.cc",
+  ]
+  deps = [
+    "$zx/kernel/lib/console",
+    "$zx/kernel/lib/crypto",
+    "$zx/kernel/lib/debuglog",
+    "$zx/kernel/lib/fbl",
+    "$zx/kernel/lib/unittest",
+    "$zx/kernel/object",
+  ]
+}

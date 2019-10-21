@@ -1,0 +1,79 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+library("async") {
+  sdk = "source"
+  sdk_publishable = true
+  sdk_headers = [
+    "lib/async/dispatcher.h",
+    "lib/async/exception.h",
+    "lib/async/receiver.h",
+    "lib/async/task.h",
+    "lib/async/time.h",
+    "lib/async/trap.h",
+    "lib/async/wait.h",
+  ]
+  public_deps = [
+    # <lib/async/cpp/wait.h> has #include <lib/fit/function.h>.
+    "$zx/system/ulib/fit:headers",
+  ]
+  sources = [
+    "ops.c",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  deps = [
+    "$zx/system/ulib/fit",
+    "$zx/system/ulib/zircon",
+  ]
+}
+
+library("async-cpp") {
+  sdk = "source"
+  sdk_publishable = true
+  sdk_headers = [
+    "lib/async/cpp/exception.h",
+    "lib/async/cpp/receiver.h",
+    "lib/async/cpp/task.h",
+    "lib/async/cpp/time.h",
+    "lib/async/cpp/trap.h",
+    "lib/async/cpp/wait.h",
+  ]
+  public_deps = [
+    # <lib/async/cpp/task.h> has #include <lib/zx/time.h>.
+    "$zx/system/ulib/zx:headers",
+
+    # <lib/async/cpp/task.h> has #include <lib/fit/function.h>.
+    "$zx/system/ulib/fit:headers",
+  ]
+  sources = [
+    "exception.cc",
+    "receiver.cc",
+    "task.cc",
+    "trap.cc",
+    "wait.cc",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  deps = [
+    ":async",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+library("async-default") {
+  sdk = "shared"
+  sdk_publishable = true
+  sdk_headers = [ "lib/async/default.h" ]
+  shared = true
+  sources = [
+    "default.c",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  public_deps = [
+    # <lib/async/default.h> has #include <lib/async/dispatcher.h>.
+    ":async.headers",
+  ]
+}

@@ -1,0 +1,67 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+test("fdio") {
+  sources = [
+    "fdio_atexit.cc",
+    "fdio_directory.cc",
+    "fdio_fd.cc",
+    "fdio_fdio.cc",
+    "fdio_get_vmo.cc",
+    "fdio_handle_fd.c",
+    "fdio_io.cc",
+    "fdio_null_namespace.cc",
+    "fdio_open_max.c",
+    "fdio_path_canonicalize.c",
+    "fdio_root.c",
+    "fdio_socket.cc",
+    "fdio_socketpair.c",
+    "fdio_stubs.cc",
+    "fdio_unsafe.cc",
+    "fdio_watcher.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-io:c",
+    "$zx/system/fidl/fuchsia-posix-socket:llcpp",
+    "$zx/system/fidl/fuchsia-process:c",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fidl-async",
+    "$zx/system/ulib/fidl-async:fidl-async-cpp",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/system/ulib/zxtest",
+  ]
+
+  data_deps = [
+    ":accept-child",
+    ":null-namespace-child",
+  ]
+}
+
+executable("accept-child") {
+  visibility = [ ":*" ]
+  testonly = true
+  sources = [
+    "fdio_atexit_test_accept_child.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zircon",
+  ]
+}
+
+executable("null-namespace-child") {
+  visibility = [ ":*" ]
+  testonly = true
+  sources = [
+    "fdio_null_namespace_child.c",
+  ]
+  deps = [
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zircon",
+  ]
+}

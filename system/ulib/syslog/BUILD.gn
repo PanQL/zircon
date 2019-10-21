@@ -1,0 +1,30 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("syslog") {
+  sdk = "shared"
+  sdk_publishable = true
+  sdk_headers = [
+    "lib/syslog/global.h",
+    "lib/syslog/logger.h",
+    "lib/syslog/wire_format.h",
+  ]
+  shared = true
+  sources = [
+    "fx_logger.cc",
+    "global.cc",
+    "logger.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-logger:c",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+  configs += [
+    "$zx/public/gn/config:static-libc++",
+    "$zx/public/gn/config:visibility_hidden",
+  ]
+}

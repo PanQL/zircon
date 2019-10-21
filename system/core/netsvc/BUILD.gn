@@ -1,0 +1,88 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/public/gn/config/product_parameters.gni")
+
+executable("netsvc") {
+  sources = [
+    "debuglog.cc",
+    "device_id.cc",
+    "netsvc.cc",
+  ]
+  if (enable_netsvc_debugging_features) {
+    sources += [ "debug-command-enabled.cc" ]
+  } else {
+    sources += [ "debug-command-disabled.cc" ]
+  }
+  deps = [
+    ":netsvc_common",
+    "$zx/system/fidl/fuchsia-hardware-ethernet:c",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/inet6",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/tftp",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+  data_deps = [
+    # netsvc launches /boot/bin/sh for netruncmd.
+    "$zx/third_party/uapp/dash",
+  ]
+}
+
+source_set("netsvc_common") {
+  sources = [
+    "board-name.cc",
+    "file-api.cc",
+    "netboot.cc",
+    "netcp.cc",
+    "paver.cc",
+    "payload-streamer.cc",
+    "tftp.cc",
+    "zbi.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-device:llcpp",
+    "$zx/system/fidl/fuchsia-device-manager:c",
+    "$zx/system/fidl/fuchsia-hardware-block:llcpp",
+    "$zx/system/fidl/fuchsia-kernel:c",
+    "$zx/system/fidl/fuchsia-sysinfo:llcpp",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/chromeos-disk-setup",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fidl-async:fidl-async-cpp",
+    "$zx/system/ulib/gpt",
+    "$zx/system/ulib/libzbi",
+    "$zx/system/ulib/zircon",
+  ]
+  public_deps = [
+    "$zx/system/fidl/fuchsia-paver:llcpp",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/inet6",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/tftp",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+test("netsvc-test") {
+  output_name = "netsvc-test"
+  sources = [
+    "test/file-api-test.cc",
+    "test/paver-test.cc",
+    "test/payload-streamer-test.cc",
+    "test/tftp-test.cc",
+  ]
+  include_dirs = [ "." ]
+  deps = [
+    ":netsvc_common",
+    "$zx/system/fidl/fuchsia-sysinfo:llcpp",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/fidl-async:fidl-async-cpp",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/zxtest",
+  ]
+}

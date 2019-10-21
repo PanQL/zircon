@@ -1,0 +1,47 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+test("fit") {
+  sources = [
+    "barrier_tests.cc",
+    "bridge_tests.cc",
+    "defer_tests.cc",
+    "examples/function_example1.cc",
+    "examples/function_example2.cc",
+    "examples/promise_example1.cc",
+    "examples/promise_example2.cc",
+    "examples/utils.cc",
+    "function_tests.cc",
+    "future_tests.cc",
+    "nullable_tests.cc",
+    "optional_tests.cc",
+    "pending_task_tests.cc",
+    "promise_tests.cc",
+    "result_tests.cc",
+    "scheduler_tests.cc",
+    "scope_tests.cc",
+    "sequencer_tests.cc",
+    "single_threaded_executor_tests.cc",
+    "suspended_task_tests.cc",
+    "traits_tests.cc",
+    "utility_internal_tests.cc",
+    "variant_tests.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fit",
+    "$zx/system/ulib/unittest",
+  ]
+  configs += [ ":config" ]
+  if (is_fuchsia) {
+    deps += [ "$zx/system/ulib/fdio" ]
+  }
+}
+
+# chromium uses this library, and enables the following flag,
+# so these tests should work with this flag enabled
+config("config") {
+  if (!is_gcc) {
+    cflags_cc = [ "-Wshadow" ]
+  }
+}

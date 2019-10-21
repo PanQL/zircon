@@ -1,0 +1,35 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("async-testing") {
+  sdk = "source"
+  sdk_publishable = true
+  sdk_headers = [
+    "lib/async-testing/dispatcher_stub.h",
+    "lib/async-testing/test_loop.h",
+    "lib/async-testing/test_loop_dispatcher.h",
+    "lib/async-testing/test_subloop.h",
+  ]
+  testonly = true
+  sources = [
+    "dispatcher_stub.cc",
+    "test_loop.cc",
+    "test_loop_dispatcher.cc",
+  ]
+  configs += [ "$zx/public/gn/config:visibility_hidden" ]
+  public_deps = [
+    # <lib/async-testing/dispatcher.h_stub> has #include <lib/async/dispatcher.h>.
+    "$zx/system/ulib/async:headers",
+
+    # <lib/async-testing/dispatcher.h_stub> has #include <lib/zx/time.h>.
+    "$zx/system/ulib/zx:headers",
+  ]
+  deps = [
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async:async-default",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zx",
+  ]
+}

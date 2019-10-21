@@ -1,0 +1,32 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("hisi-lib") {
+  sdk = "static"
+  sdk_headers = [
+    "dev/clk/hisi-lib/hisi-gate.h",
+    "dev/clk/hisi-lib/hisi-clk.h",
+  ]
+  sources = [
+    "hisi-clk.cc",
+  ]
+  public_deps = [
+    # <dev/clk/hisi-lib/hisi-clk.h> has #include <lib/mmio/mmio.h>.
+    "$zx/system/dev/lib/mmio:headers",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.clockimpl",
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/dev/lib/device-protocol-pdev",
+    "$zx/system/dev/lib/device-protocol-platform-device",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/driver",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+  ]
+}

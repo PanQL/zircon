@@ -1,0 +1,40 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("pcie") {
+  kernel = true
+  sources = [
+    "address_provider/designware.cc",
+    "address_provider/ecam_region.cc",
+    "address_provider/mmio.cc",
+    "address_provider/pio.cc",
+    "debug.cc",
+    "pci_config.cc",
+    "pcie_bridge.cc",
+    "pcie_bus_driver.cc",
+    "pcie_caps.cc",
+    "pcie_device.cc",
+    "pcie_irqs.cc",
+    "pcie_quirks.cc",
+    "pcie_root.cc",
+    "pcie_upstream_node.cc",
+  ]
+  deps = [
+    "$zx/kernel/lib/console",
+    "$zx/kernel/lib/fbl",
+    "$zx/kernel/lib/pci",
+    "$zx/kernel/vm:headers",
+    "$zx/system/ulib/region-alloc",
+  ]
+  public_deps = [
+    # <dev/pcie_platform.h> has #include <dev/interrupt.h>.
+    "$zx/kernel/dev/interrupt:headers",
+
+    # <dev/pcie_bus_driver.h> has #include <region-alloc/region-alloc.h>.
+    "$zx/system/ulib/region-alloc:headers",
+  ]
+
+  # TODO(mcgrathr): Say why this is needed.
+  cflags_cc = [ "-Wno-invalid-offsetof" ]
+}

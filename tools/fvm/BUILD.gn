@@ -1,0 +1,25 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+host_tool("fvm") {
+  sources = [
+    "main.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fvm",
+    "$zx/system/ulib/fvm-host",
+    "$zx/third_party/ulib/safemath",
+  ]
+
+  if (current_os == "linux") {
+    sources += [ "mtd.cc" ]
+    deps += [
+      "$zx/system/ulib/ftl-mtd",
+      "$zx/system/ulib/mtd",
+    ]
+  } else {
+    sources += [ "mtd-stub.cc" ]
+  }
+}

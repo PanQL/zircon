@@ -1,0 +1,51 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("msm8x53-power") {
+  sources = [
+    "msm8x53-power.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.powerimpl",
+    "$zx/system/dev/lib/device-protocol-pdev",
+    "$zx/system/dev/lib/mmio",
+    "$zx/system/dev/lib/msm8x53",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/hwreg",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+test("msm8x53-power-test") {
+  testonly = true
+  output_name = "msm8x53-power-test"
+  sources = [
+    "msm8x53-power-test.cc",
+    "msm8x53-power.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.platform.bus",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.powerimpl",
+    "$zx/system/dev/lib/device-protocol-pdev",
+    "$zx/system/dev/lib/mock-mmio-reg",
+    "$zx/system/dev/lib/msm8x53",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/driver",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/hwreg",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/system/ulib/zxtest",
+  ]
+}

@@ -1,0 +1,123 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/public/gn/package.gni")
+import("$zx/public/gn/zbi.gni")
+
+package("bootsvc") {
+  deps = [
+    ":bin",
+  ]
+  data_deps = [
+    # When this package() is included in a zbi(), the cmdline
+    # entry to set userboot.root will be included too.
+    ":cmdline",
+
+    # At runtime, bootsvc launches devcoordinator, so it needs to be in the
+    # zbi() as well.  Note this is in data_deps of the package() rather
+    # than the executable() so that as long as devcoordinator is just an
+    # executable() target itself, it will just go into the zbi() and not
+    # into this package().  When devcoordinator becomes a package() target
+    # itself, then having this on either the package() or the executable()
+    # will have the same effect: just include that whole package() in any
+    # zbi() that contains this one, but don't include anything related to
+    # devcoordinator into this package itself.
+    "$zx/system/core/devmgr/devcoordinator",
+  ]
+}
+
+zbi_input("cmdline") {
+  visibility = [ ":*" ]
+  type = "cmdline"
+  args = [ "--entry=userboot.root=${bootfs_package_prefix}bootsvc" ]
+}
+
+executable("bin") {
+  output_name = "bootsvc"
+  sources = [
+    "bootfs-loader-service.cc",
+    "bootfs-loader-service.h",
+    "bootfs-service.cc",
+    "bootfs-service.h",
+    "main.cc",
+    "svcfs-service.cc",
+    "svcfs-service.h",
+  ]
+  deps = [
+    ":util",
+    "$zx/system/fidl/fuchsia-boot:c",
+    "$zx/system/fidl/fuchsia-io:c",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async:async-default",
+    "$zx/system/ulib/async-loop",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/bootfs",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/fidl-async",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/launchpad",
+    "$zx/system/ulib/loader-service",
+    "$zx/system/ulib/memfs:memfs-cpp.static",
+    "$zx/system/ulib/memfs:static",
+    "$zx/system/ulib/trace",
+    "$zx/system/ulib/trace-engine",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/third_party/ulib/lz4",
+  ]
+}
+
+source_set("util") {
+  sources = [
+    "util.cc",
+    "util.h",
+  ]
+  deps = [
+    "$zx/third_party/ulib/safemath",
+  ]
+  public_deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+group("tests") {
+  testonly = true
+  data_deps = [
+    ":bootsvc-unit-test",
+    ":bootsvc-integration-test",
+  ]
+}
+
+test("bootsvc-unit-test") {
+  output_name = "bootsvc-unit-test"
+  sources = [
+    "unit-test.cc",
+  ]
+  deps = [
+    ":util",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/unittest",
+  ]
+}
+
+executable("bootsvc-integration-test") {
+  testonly = true
+  sources = [
+    "integration-test.cc",
+  ]
+  deps = [
+    ":util",
+    "$zx/system/fidl/fuchsia-boot:c",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/third_party/ulib/safemath",
+  ]
+}

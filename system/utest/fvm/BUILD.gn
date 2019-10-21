@@ -1,0 +1,85 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+test("fvm") {
+  sources = [
+    "fvm.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-device:c",
+    "$zx/system/fidl/fuchsia-hardware-block-volume:c",
+    "$zx/system/fidl/fuchsia-io:c",
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async:async-default",
+    "$zx/system/ulib/async-loop",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/bitmap",
+    "$zx/system/ulib/blobfs",
+    "$zx/system/ulib/block-client",
+    "$zx/system/ulib/digest",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/fs-management",
+    "$zx/system/ulib/fvm",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/gpt",
+    "$zx/system/ulib/memfs",
+    "$zx/system/ulib/minfs",
+    "$zx/system/ulib/ramdevice-client",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/trace",
+    "$zx/system/ulib/trace-engine",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zx",
+    "$zx/third_party/ulib/cksum",
+    "$zx/third_party/ulib/uboringssl",
+  ]
+}
+
+library("fvm-test-utils") {
+  sources = [
+    "utils.cc",
+  ]
+
+  public_deps = [
+    "$zx/system/fidl/fuchsia-hardware-block-volume:c",
+    "$zx/system/ulib/fbl:headers",
+    "$zx/system/ulib/fvm:headers",
+    "$zx/system/ulib/ramdevice-client:headers",
+    "$zx/system/ulib/zx:headers",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-device:c",
+    "$zx/system/fidl/fuchsia-hardware-block-partition:c",
+    "$zx/system/fidl/fuchsia-hardware-block-volume:c",
+    "$zx/system/fidl/fuchsia-io:llcpp",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/fs-management",
+    "$zx/system/ulib/fvm",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/ramdevice-client",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+    "$zx/system/ulib/zxtest",
+  ]
+}
+
+test("fvm-integration") {
+  sources = [
+    "resize-tests.cc",
+  ]
+
+  deps = [
+    ":fvm-test-utils",
+    "$zx/system/ulib/devmgr-integration-test",
+    "$zx/system/ulib/devmgr-launcher",
+    "$zx/system/ulib/zxtest",
+  ]
+}

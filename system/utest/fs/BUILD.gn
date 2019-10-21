@@ -1,0 +1,98 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+test("fs") {
+  test_group = "fs"
+  sources = [
+    "filesystems.cc",
+    "main.cc",
+    "misc.c",
+    "test-access.cc",
+    "test-append.cc",
+    "test-attr.c",
+    "test-basic.c",
+    "test-clone.cc",
+    "test-directory.cc",
+    "test-dot-dot.c",
+    "test-fcntl.cc",
+    "test-link.c",
+    "test-lseek.cc",
+    "test-maxfile.cc",
+    "test-minfs.cc",
+    "test-mmap.cc",
+    "test-overflow.c",
+    "test-persist.cc",
+    "test-random-op.c",
+    "test-realpath.cc",
+    "test-rename.cc",
+    "test-resize.cc",
+    "test-rw-workers.c",
+    "test-rw.cc",
+    "test-sparse.cc",
+    "test-sync.c",
+    "test-threading.cc",
+    "test-truncate.cc",
+    "test-unlink.cc",
+    "test-watcher.cc",
+    "wrap.c",
+  ]
+
+  wrap_symbols = [
+    "chdir",
+    "link",
+    "mkdir",
+    "open",
+    "opendir",
+    "realpath",
+    "remove",
+    "rename",
+    "renameat",
+    "rmdir",
+    "stat",
+    "symlink",
+    "truncate",
+    "unlink",
+    "utimes",
+  ]
+  ldflags = []
+  foreach(symbol, wrap_symbols) {
+    ldflags += [ "-Wl,--wrap,$symbol" ]
+  }
+
+  deps = [
+    "$zx/system/fidl/fuchsia-cobalt:c",
+    "$zx/system/fidl/fuchsia-device:c",
+    "$zx/system/fidl/fuchsia-hardware-block:c",
+    "$zx/system/fidl/fuchsia-io:c",
+    "$zx/system/fidl/fuchsia-mem:c",
+    "$zx/system/fidl/fuchsia-minfs:c",
+    "$zx/system/ulib/async",
+    "$zx/system/ulib/async:async-cpp",
+    "$zx/system/ulib/async:async-default",
+    "$zx/system/ulib/async-loop",
+    "$zx/system/ulib/async-loop:async-loop-cpp",
+    "$zx/system/ulib/block-client",
+    "$zx/system/ulib/cobalt-client",
+    "$zx/system/ulib/digest",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fs",
+    "$zx/system/ulib/fs-management",
+    "$zx/system/ulib/fvm",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/gpt",
+    "$zx/system/ulib/launchpad",
+    "$zx/system/ulib/memfs",
+    "$zx/system/ulib/minfs",
+    "$zx/system/ulib/ramdevice-client",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/trace",
+    "$zx/system/ulib/trace-engine",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zircon-internal",
+    "$zx/system/ulib/zx",
+    "$zx/third_party/ulib/uboringssl",
+  ]
+}

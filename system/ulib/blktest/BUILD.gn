@@ -1,0 +1,24 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("blktest") {
+  shared = true
+  testonly = true
+  sources = [
+    "blktest.cc",
+  ]
+  deps = [
+    "$zx/system/fidl/fuchsia-hardware-block:c",
+    "$zx/system/ulib/block-client",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fzl",
+    "$zx/system/ulib/pretty",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+  configs += [ "$zx/public/gn/config:static-libc++" ]
+}

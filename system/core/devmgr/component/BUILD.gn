@@ -1,0 +1,56 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+driver("component") {
+  sources = [
+    "component.cc",
+  ]
+  data_deps = [
+    ":component.proxy",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.amlogiccanvas",
+    "$zx/system/banjo/ddk.protocol.clock",
+    "$zx/system/banjo/ddk.protocol.codec",
+    "$zx/system/banjo/ddk.protocol.ethernet.board",
+    "$zx/system/banjo/ddk.protocol.gpio",
+    "$zx/system/banjo/ddk.protocol.i2c",
+    "$zx/system/banjo/ddk.protocol.mipicsi",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.power",
+    "$zx/system/banjo/ddk.protocol.sysmem",
+    "$zx/system/banjo/ddk.protocol.usb.modeswitch",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+driver("component.proxy") {
+  sources = [
+    "component-proxy.cc",
+  ]
+  deps = [
+    "$zx/system/banjo/ddk.protocol.amlogiccanvas",
+    "$zx/system/banjo/ddk.protocol.clock",
+    "$zx/system/banjo/ddk.protocol.codec",
+    "$zx/system/banjo/ddk.protocol.ethernet.board",
+    "$zx/system/banjo/ddk.protocol.gpio",
+    "$zx/system/banjo/ddk.protocol.i2c",
+    "$zx/system/banjo/ddk.protocol.mipicsi",
+    "$zx/system/banjo/ddk.protocol.platform.device",
+    "$zx/system/banjo/ddk.protocol.power",
+    "$zx/system/banjo/ddk.protocol.sysmem",
+    "$zx/system/banjo/ddk.protocol.usb.modeswitch",
+    "$zx/system/ulib/ddk",
+    "$zx/system/ulib/ddktl",
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/sync",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}

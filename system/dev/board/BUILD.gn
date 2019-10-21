@@ -1,0 +1,27 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("board") {
+  testonly = true
+  deps = [
+    "integration-test",
+    "machina",
+    "qemu",
+    "test",
+  ]
+  if (current_cpu == "arm64") {
+    deps += [
+      "as370",
+      "astro",
+      "gauss",
+      "hikey960",
+      "msm8x53-som",
+      "mt8167s_ref",
+      "sherlock",
+      "vim2",
+    ]
+  } else if (current_cpu == "x64") {
+    deps += [ "x86" ]
+  }
+}

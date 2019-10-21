@@ -1,0 +1,167 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("fs") {
+  sdk = "source"
+  sdk_headers = [
+    "fs/block-txn.h",
+    "fs/client.h",
+    "fs/connection.h",
+    "fs/handler.h",
+    "fs/lazy-dir.h",
+    "fs/locking.h",
+    "fs/managed-vfs.h",
+    "fs/pseudo-dir.h",
+    "fs/pseudo-file.h",
+    "fs/queue.h",
+    "fs/ref_counted.h",
+    "fs/remote-dir.h",
+    "fs/remote.h",
+    "fs/service.h",
+    "fs/synchronous-vfs.h",
+    "fs/ticker.h",
+    "fs/trace.h",
+    "fs/tracked-remote-dir.h",
+    "fs/vfs.h",
+    "fs/vmo-file.h",
+    "fs/vnode.h",
+    "fs/watcher.h",
+  ]
+  host = true
+  static = true
+
+  public_deps = [
+    "$zx/system/ulib/fbl:headers",
+    "$zx/system/ulib/fdio:headers",
+  ]
+
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/zircon-internal",
+  ]
+
+  # Uncomment to enable FS_TRACE_DEBUG-level logging
+  # defines = [ "FS_TRACE_DEBUG_ENABLED" ]
+
+  sources = [
+    "block-txn.cc",
+    "vfs.cc",
+    "vnode.cc",
+  ]
+
+  if (is_fuchsia) {
+    sources += [
+      "connection.cc",
+      "handler.cc",
+      "lazy-dir.cc",
+      "managed-vfs.cc",
+      "mount.cc",
+      "pseudo-dir.cc",
+      "pseudo-file.cc",
+      "remote-dir.cc",
+      "service.cc",
+      "synchronous-vfs.cc",
+      "tracked-remote-dir.cc",
+      "unmount.cc",
+      "vmo-file.cc",
+      "watcher.cc",
+    ]
+    public_deps += [
+      "$zx/system/ulib/async:headers",
+      "$zx/system/ulib/zx:headers",
+
+      # <fs/vnode.h> has #include <fuchsia/io/c/fidl.h>.
+      "$zx/system/fidl/fuchsia-io:c.headers",
+
+      # <fs/trace.h> has #include <trace/event.h>.
+      "$zx/system/ulib/trace:headers",
+
+      # <fs/connection.h> has #include <lib/async/cpp/wait.h>.
+      "$zx/system/ulib/async:async-cpp",
+    ]
+    configs += [ "$zx/public/gn/config:visibility_hidden" ]
+    deps += [
+      "$zx/system/fidl/fuchsia-cobalt:c",
+      "$zx/system/fidl/fuchsia-io:c",
+      "$zx/system/fidl/fuchsia-mem:c",
+      "$zx/system/ulib/async",
+      "$zx/system/ulib/async:async-cpp",
+      "$zx/system/ulib/fbl",
+      "$zx/system/ulib/fdio",
+      "$zx/system/ulib/fidl",
+      "$zx/system/ulib/fidl-utils",
+      "$zx/system/ulib/fzl",
+      "$zx/system/ulib/sync",
+      "$zx/system/ulib/trace",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zx",
+    ]
+  }
+}
+
+if (is_fuchsia) {
+  # TODO(mcgrathr): This is for libdriver.so to include so it won't get
+  # libtrace-engine.so.  Figure out a better way to handle this.
+  library("fs-for-driver") {
+    visibility = [
+      ":*",
+      "$zx/system/core/devmgr/*",
+    ]
+    sources = [
+      "block-txn.cc",
+      "connection.cc",
+      "handler.cc",
+      "lazy-dir.cc",
+      "managed-vfs.cc",
+      "mount.cc",
+      "pseudo-dir.cc",
+      "pseudo-file.cc",
+      "remote-dir.cc",
+      "service.cc",
+      "synchronous-vfs.cc",
+      "tracked-remote-dir.cc",
+      "unmount.cc",
+      "vfs.cc",
+      "vmo-file.cc",
+      "vnode.cc",
+      "watcher.cc",
+    ]
+
+    # Uncomment to enable FS_TRACE_DEBUG-level logging
+    # defines = [ "FS_TRACE_DEBUG_ENABLED" ]
+
+    public_deps = [
+      "$zx/system/ulib/async:headers",
+      "$zx/system/ulib/fbl:headers",
+      "$zx/system/ulib/fdio:headers",
+      "$zx/system/ulib/fzl:headers",
+      "$zx/system/ulib/zx:headers",
+
+      # <fs/vnode.h> has #include <fuchsia/io/c/fidl.h>.
+      "$zx/system/fidl/fuchsia-io:c.headers",
+
+      # <fs/trace.h> has #include <trace/event.h>.
+      "$zx/system/ulib/trace:headers",
+    ]
+    configs += [ "$zx/public/gn/config:visibility_hidden" ]
+    deps = [
+      "$zx/system/fidl/fuchsia-cobalt:c",
+      "$zx/system/fidl/fuchsia-io:c",
+      "$zx/system/fidl/fuchsia-mem:c",
+      "$zx/system/ulib/async",
+      "$zx/system/ulib/async:async-cpp",
+      "$zx/system/ulib/cobalt-client",
+      "$zx/system/ulib/fbl",
+      "$zx/system/ulib/fdio",
+      "$zx/system/ulib/fidl",
+      "$zx/system/ulib/fidl-utils",
+      "$zx/system/ulib/fzl",
+      "$zx/system/ulib/sync",
+      "$zx/system/ulib/trace:trace-driver",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zircon-internal",
+      "$zx/system/ulib/zx",
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("devmgr-launcher") {
+  sdk = "shared"
+  sdk_headers = [
+    "lib/devmgr-launcher/launch.h",
+    "lib/devmgr-launcher/processargs.h",
+  ]
+  shared = true
+  sources = [
+    "launcher.cc",
+  ]
+  public_deps = [
+    "$zx/system/ulib/fit",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+  configs += [ "$zx/public/gn/config:static-libc++" ]
+}

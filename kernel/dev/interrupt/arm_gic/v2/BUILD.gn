@@ -1,0 +1,36 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+library("v2") {
+  kernel = true
+  sources = [
+    "arm_gicv2.cc",
+    "arm_gicv2m.cc",
+    "arm_gicv2m_msi.cc",
+    "arm_gicv2m_pcie.cc",
+  ]
+  deps = [
+    ":test",
+    "$zx/kernel/dev/interrupt",
+    "$zx/kernel/dev/interrupt/arm_gic/common",
+    "$zx/kernel/dev/pcie",
+    "$zx/kernel/dev/pdev",
+    "$zx/kernel/dev/pdev/interrupt",
+    "$zx/kernel/lib/fbl",
+    "$zx/kernel/lib/pow2_range_allocator",
+    "$zx/kernel/lib/topology",
+  ]
+}
+
+source_set("test") {
+  # TODO: testonly = true
+  sources = [
+    "arm_gicv2_test.cc",
+  ]
+  include_dirs = [ "include" ]
+  deps = [
+    "$zx/kernel/lib/fbl",
+    "$zx/kernel/lib/unittest",
+  ]
+}

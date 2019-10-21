@@ -1,0 +1,27 @@
+// Copyright 2019 The Fuchsia Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+library ddk.protocol.powerimpl;
+
+using zx;
+using ddk.protocol.power;
+
+[Layout = "ddk-protocol"]
+protocol PowerImpl {
+    /// Get status of a power domain
+    GetPowerDomainStatus(uint32 index) -> (zx.status s,
+                                           ddk.protocol.power.PowerDomainStatus status);
+    /// Enable a power domain
+    EnablePowerDomain(uint32 index) -> (zx.status s);
+    /// Disable a power domain
+    DisablePowerDomain(uint32 index) -> (zx.status s);
+    /// Get Supported Voltage Range
+    GetSupportedVoltageRange(uint32 index) -> (zx.status s, uint32 min, uint32 max);
+    /// Request for a particular voltage
+    RequestVoltage(uint32 index, uint32 voltage) -> (zx.status s, uint32 actual_voltage);
+    /// Write to ctrl register of PMIC
+    WritePmicCtrlReg(uint32 index, uint32 reg_addr, uint32 value) -> (zx.status s);
+    /// Read ctrl register of PMIC
+    ReadPmicCtrlReg(uint32 index, uint32 reg_addr) -> (zx.status s, uint32 value);
+};

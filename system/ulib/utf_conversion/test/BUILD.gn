@@ -1,0 +1,35 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("$zx/public/gn/fuzzer.gni")
+group("test") {
+  testonly = true
+  deps = [
+    ":utf_conversion",
+    ":utf_conversion-fuzzer",
+  ]
+}
+
+test("utf_conversion") {
+  sources = [
+    "main.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/pretty",
+    "$zx/system/ulib/utf_conversion",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zxtest",
+  ]
+}
+
+fuzzer("utf_conversion-fuzzer") {
+  sources = [
+    "utf_conversion-fuzzer.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/utf_conversion",
+  ]
+}

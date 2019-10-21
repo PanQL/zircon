@@ -1,0 +1,55 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("common") {
+  testonly = true
+  visibility = [ ":*" ]
+  sources = [
+    "fidl_coded_types.cc",
+    "handle_closing_tests.cc",
+    "linearizing_tests.cc",
+    "llcpp_types_tests.cc",
+    "on_error_handle_tests.cc",
+
+    # Generated coding table for fidl/extra_messages.fidl Cannot yet use
+    # the FIDL_LIBS directive, since FIDL Tables are not supported in the C
+    # generator.  See ./fidl/README.md for details.
+    "fidl/extra_messages.cc",
+  ]
+  public_deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/fdio",
+    "$zx/system/ulib/fidl",
+    "$zx/system/ulib/fit",
+    "$zx/system/ulib/unittest",
+    "$zx/system/ulib/zircon",
+    "$zx/system/ulib/zx",
+  ]
+}
+
+# Run the common tests under a strict invalid handle policy
+executable("fidl-handle-policy-test-app") {
+  testonly = true
+  sources = []
+  deps = [
+    ":common",
+  ]
+}
+
+test("fidl") {
+  sources = [
+    "abi_tests.cc",
+    "cpp_types_tests.cc",
+    "decoding_tests.cc",
+    "encoding_tests.cc",
+    "formatting_tests.cc",
+    "message_tests.cc",
+    "run_with_handle_policy_tests.cc",
+    "validating_tests.cc",
+  ]
+  deps = [
+    ":common",
+    ":fidl-handle-policy-test-app",
+  ]
+}

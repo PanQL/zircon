@@ -1,0 +1,69 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("test") {
+  testonly = true
+  deps = [
+    ":fbl",
+  ]
+}
+
+test("fbl") {
+  include_dirs = [ "include" ]
+  sources = [
+    "algorithm_tests.cc",
+    "array_tests.cc",
+    "auto_call_tests.cc",
+    "forward_tests.cc",
+    "function_tests.cc",
+    "intrusive_container_tests.cc",
+    "intrusive_doubly_linked_list_tests.cc",
+    "intrusive_hash_table_dll_tests.cc",
+    "intrusive_hash_table_sll_tests.cc",
+    "intrusive_singly_linked_list_tests.cc",
+    "intrusive_wavl_tree_tests.cc",
+    "macro_tests.cc",
+    "recycler_tests.cc",
+    "ref_ptr_tests.cc",
+    "span_tests.cc",
+    "string_buffer_tests.cc",
+    "string_piece_tests.cc",
+    "string_printf_tests.cc",
+    "string_tests.cc",
+    "string_traits_tests.cc",
+    "type_info_tests.cc",
+    "unique_fd_tests.cc",
+    "unique_free_ptr_tests.cc",
+    "unique_ptr_tests.cc",
+    "vector_tests.cc",
+  ]
+  deps = [
+    "$zx/system/ulib/fbl",
+    "$zx/system/ulib/unittest",
+  ]
+
+  if (is_fuchsia) {
+    # These tests won't run on the host. There are two primary reasons for this.
+    #
+    # First, Some of these tests (ref_counted_upgradeable and
+    # slab_allocator) need fbl::Mutex which currently isn't supported on
+    # the host.
+    #
+    # Second, some of these tests make use of the ASSERT_DEATH macro to
+    # ensure that certain actions result in program termination.  Again,
+    # this is not currently supported in the host test environment.
+    #
+    # See: TODO(ZX-1053)
+    sources += [
+      "condition_variable_tests.cc",
+      "ref_counted_tests.cc",
+      "slab_allocator_tests.cc",
+    ]
+    deps += [
+      "$zx/system/ulib/fdio",
+      "$zx/system/ulib/zircon",
+      "$zx/system/ulib/zx",
+    ]
+  }
+}
