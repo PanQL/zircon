@@ -102,14 +102,14 @@ import("$zx/public/gn/toolchain/variants.gni")
 #     Type: string
 #
 template("environment_redirect") {
-  forward_variables_from(invoker,
+  forward_variables_from(invoker, # 引入调用者scope中的cpu、environment_label、os、variant
                          [
                            "cpu",
                            "environment_label",
                            "os",
                            "variant",
                          ])
-  if (!defined(environment_label)) {
+  if (!defined(environment_label)) {  # 如果调用者scope中没有设定environment_label，那么引用toolchain.environment_label
     assert(defined(toolchain.environment_label),
            "environment_redirect() needs `environment_label`" +
                " in $current_toolchain")
@@ -124,7 +124,7 @@ template("environment_redirect") {
   base_environment = get_path_info(environment, "name")
   not_needed([ "base_environment" ])
 
-  if (defined(cpu)) {
+  if (defined(cpu)) { # 如果调用者设定了cpu，保证cpu名称不为空
     assert(cpu != "", "empty `cpu` in environment_redirect()")
   } else {
     if (base_environment == "host") {

@@ -7,7 +7,7 @@ config:
 run:
 	buildtools/linux-x64/qemu/bin/qemu-system-x86_64 \
 		-kernel out/multiboot.bin \
-		-initrd out/x64.zbi \
+		-initrd out/legacy-image-x64.zbi \
 		-m 2048 \
 		-nographic \
 		-net none \
