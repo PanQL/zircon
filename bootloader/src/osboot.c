@@ -336,6 +336,7 @@ static inline void swap_to_head(const char c, char* s, const size_t n) {
 size_t kernel_zone_size;
 efi_physical_addr kernel_zone_base;
 
+// 这里是整个bootloader的入口
 EFIAPI efi_status efi_main(efi_handle img, efi_system_table* sys) {
     xefi_init(img, sys);
     gConOut->ClearScreen(gConOut);
@@ -372,6 +373,7 @@ EFIAPI efi_status efi_main(efi_handle img, efi_system_table* sys) {
     draw_version(BOOTLOADER_VERSION);
     gConOut->SetAttribute(gConOut, prev_attr);
 
+    printf("hey, here is bootloader");
     if (have_fb) {
         printf("Framebuffer base is at %" PRIx64 "\n\n",
                gop->Mode->FrameBufferBase);

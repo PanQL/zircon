@@ -5,7 +5,7 @@ config:
 	buildtools/gn gen --export-compile-commands=x64 out
 
 run:
-	buildtools/linux-x64/qemu/bin/qemu-system-x86_64 \
+	qemu-system-x86_64 \
 		-kernel out/multiboot.bin \
 		-initrd out/legacy-image-x64.zbi \
 		-m 2048 \
