@@ -22,6 +22,7 @@ declare_args() {
     environment = "stub"
     label = "$zx/public/gn/toolchain:stub"
     globals = {
+      gcc = false # 是否使用gcc替代clang
     }
   }
 }
