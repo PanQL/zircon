@@ -1,4 +1,8 @@
 # Zircon
+----  
+这是从Fuchsia官方的20190715版本代码仓库中分离出来的Zircon代码，用于进行Zircon内核学习。可以通过简陋的Makefile脚本进行编译并在qemu上运行。
+目前支持在ubuntu 18.04上编译运行，Mac用户可能需要补全buildtool目录下的相应软件，gn、ninja、qemu等
+----  
 
 Zircon is the core platform that powers the Fuchsia OS.  Zircon is
 composed of a microkernel (source in kernel/...) as well as a small
