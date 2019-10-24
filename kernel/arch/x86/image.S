@@ -64,8 +64,8 @@ END_DATA(_zbi_kernel_header)
 
 // ZBI_TYPE_KERNEL payload (zbi_kernel_t)
 DATA(_zbi_kernel_payload)
-    .quad PHYS(IMAGE_ELF_ENTRY)
-    .quad boot_bss_end - boot_load_end
+    .quad PHYS(IMAGE_ELF_ENTRY)     // 该处地址为start.S中的_start地址
+    .quad boot_bss_end - boot_load_end  // 在该image加载之后，还应该余下多少内存空间
 END_DATA(_zbi_kernel_payload)
 
 // Pad out to the header size that was allocated in the kernel image layout.
@@ -115,7 +115,7 @@ FUNCTION(apply_fixups)
 .endif
 .endm
 
-#include "kernel-fixups.inc"
+#include "kernel-fixups.inc"    // 这个文件由$zx/kernel/BUILD.gn中的同名target生成，内部全是对fixup宏的调用
 
     ret
 

@@ -125,13 +125,13 @@ static zbi_result_t find_kernel_item(zbi_header_t* hdr, void* payload,
 }
 
 noreturn void multiboot_main(uint32_t magic, multiboot_info_t* info) {
-    if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
+    if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {  // 检查bootloader的magic数是否设置正确
         panic("bad multiboot magic from bootloader %#"PRIx32" != %#"PRIx32"\n",
               magic, (uint32_t)MULTIBOOT_BOOTLOADER_MAGIC);
     }
 
     uintptr_t upper_memory_limit = 0;
-    if (info->flags & MB_INFO_MEM_SIZE) {
+    if (info->flags & MB_INFO_MEM_SIZE) {   // 如果info中的mem_lower和mem_higher项被设置了
         upper_memory_limit = info->mem_upper << 10;
         if (info->mem_upper > (UINT32_MAX >> 10)) {
             upper_memory_limit = -4096u;
@@ -179,6 +179,7 @@ noreturn void multiboot_main(uint32_t magic, multiboot_info_t* info) {
     zbi_header_t* zbi = (void*)mod->mod_start;
     size_t zbi_len = mod->mod_end - mod->mod_start;
 
+    // 加载的zbi的大小应该是至少大于zbi_header的大小
     if (zbi == NULL || zbi_len < sizeof(*zbi)) {
         panic("insufficient multiboot module [%#"PRIx32",%#"PRIx32")"
               " for ZBI header", mod->mod_start, mod->mod_end);
@@ -229,6 +230,7 @@ noreturn void multiboot_main(uint32_t magic, multiboot_info_t* info) {
     uint8_t* const kernel_memory_end =
         kernel_load_end + ZBI_ALIGN(kernel_header->reserve_memory_size);
 
+    // bootlodaer给出的内存范围不足以支撑OS kernel加载的需要
     if (upper_memory_limit < (uintptr_t)kernel_memory_end) {
         panic("upper memory limit %#"PRIxPTR" < kernel end %p",
               upper_memory_limit, kernel_memory_end);

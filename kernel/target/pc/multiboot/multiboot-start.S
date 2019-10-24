@@ -45,6 +45,7 @@ FUNCTION(_start)
     rep stosb
 
     // Switch to our stack.
+    // 之前对bss段清0的时候同时也初始化了初始的stack，因为stack也是在bss段中的。
     mov $stack_end, %esp
     xor %ebp, %ebp
 

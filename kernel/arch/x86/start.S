@@ -54,7 +54,7 @@ FUNCTION_LABEL(_start)
 
     // The first word after the kernel image (at __data_end in our view)
     // gives the size of the following code.  Copy it to _end.
-    mov PHYS(__data_end), %ecx
+    mov PHYS(__data_end), %ecx  // 获取apply_fixups代码块的大小
     mov $PHYS(__data_end+4), %esi
     mov $PHYS(_end), %edi
     rep movsb // while (ecx-- > 0) *edi++ = *esi++;

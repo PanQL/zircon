@@ -13,7 +13,7 @@
 
 // Flags for multiboot header:
 //   0x00000002: Boot loader should provide memory map.
-//   0x00010000: *_addr fields in multiboot_header_t are used.
+//   0x00010000: *_addr fields in multiboot_header_t are used. 要求bootloader提供header_addr、load_addr等*_addr
 #define MULTIBOOT_HEADER_FLAGS 0x00010002
 
 /* magic number passed by multiboot-compliant boot loaders */
@@ -73,7 +73,7 @@ typedef struct multiboot_info {
     uint32_t apm_table;
 } multiboot_info_t;
 
-#define MB_INFO_MEM_SIZE 0x001
+#define MB_INFO_MEM_SIZE 0x001  // MultiBoot_INFO_MEM_SIZE
 #define MB_INFO_BOOT_DEV 0x002
 #define MB_INFO_CMD_LINE 0x004
 #define MB_INFO_MODS 0x008

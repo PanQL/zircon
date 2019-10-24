@@ -247,7 +247,7 @@ foreach(cpu, standard_fuchsia_cpus) {
     environment_label = "$zx/public/gn/toolchain:user"
     cpu = cpu
     deps = [
-      "$zx/bootloader",
+      # "$zx/bootloader",
       "$zx/kernel",
       "$zx/system/core",
       "$zx/system/dev",
