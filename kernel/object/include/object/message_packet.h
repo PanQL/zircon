@@ -53,9 +53,9 @@ public:
         return buffer_chain_->CopyOut(buf, payload_offset_, data_size_);
     }
 
-    uint32_t num_handles() const { return num_handles_; }
-    Handle* const* handles() const { return handles_; }
-    Handle** mutable_handles() { return handles_; }
+    uint32_t num_handles() const { return num_handles_; }   // 返回handles的数量
+    Handle* const* handles() const { return handles_; }     // 返回只读的handles数组
+    Handle** mutable_handles() { return handles_; }     // 返回可读可写的handles数组
 
     void set_owns_handles(bool own_handles) { owns_handles_ = own_handles; }
 
@@ -107,10 +107,10 @@ private:
                                     MessagePacketPtr* msg);
 
     BufferChain* buffer_chain_;
-    Handle** const handles_;
+    Handle** const handles_;    // 全部handle的数组
     const uint32_t data_size_;
     const uint32_t payload_offset_;
-    const uint16_t num_handles_;
+    const uint16_t num_handles_;    // handle的数量
     bool owns_handles_;
 };
 

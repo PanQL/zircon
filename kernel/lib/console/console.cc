@@ -833,6 +833,7 @@ static int cmd_test(int argc, const cmd_args* argv, uint32_t flags) {
 
 static void kernel_shell_init(uint level) {
     if (cmdline_get_bool("kernel.shell", false)) {
+        printf("panpan : cmdline kernel shell is true");
         console_start();
     }
 }
