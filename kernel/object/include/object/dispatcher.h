@@ -386,7 +386,7 @@ public:
 protected:
     const fbl::Canary<CanaryTag<Self>::magic> canary_;
 
-    zx_koid_t peer_koid_ = 0u;
+    zx_koid_t peer_koid_ = 0u;  // 对方的kernel object id
     fbl::RefPtr<Self> peer_ TA_GUARDED(get_lock());
 
 private:

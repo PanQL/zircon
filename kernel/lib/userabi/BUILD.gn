@@ -65,6 +65,7 @@ library("userabi") {
 #     - Type: bool
 #     - Default: false
 #
+# 生成如userboot-code.h这样的头文件
 template("rodso") {
   rspfile_target = "$target_name.rsp"
   rspfile = "$target_gen_dir/$rspfile_target"

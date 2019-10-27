@@ -42,12 +42,14 @@ KCOUNTER(dispatcher_channel_destroy_count, "dispatcher.channel.destroy")
 zx_status_t ChannelDispatcher::Create(KernelHandle<ChannelDispatcher>* handle0,
                                       KernelHandle<ChannelDispatcher>* handle1,
                                       zx_rights_t* rights) {
+    // 生成一个新的PeerHolder，得到指向它的仅有的两个指针holder0、holder1
     fbl::AllocChecker ac;
     auto holder0 = fbl::AdoptRef(new (&ac) PeerHolder<ChannelDispatcher>());
     if (!ac.check())
         return ZX_ERR_NO_MEMORY;
     auto holder1 = holder0;
 
+    // 根据holder0、holder1实例化两个ChannelDispatcher:new_handle0、new_handle1
     KernelHandle new_handle0(fbl::AdoptRef(new (&ac) ChannelDispatcher(ktl::move(holder0))));
     if (!ac.check())
         return ZX_ERR_NO_MEMORY;
@@ -56,9 +58,11 @@ zx_status_t ChannelDispatcher::Create(KernelHandle<ChannelDispatcher>* handle0,
     if (!ac.check())
         return ZX_ERR_NO_MEMORY;
 
+    // 让两个ChannelDispatcher保存彼此的指针和koid
     new_handle0.dispatcher()->Init(new_handle1.dispatcher());
     new_handle1.dispatcher()->Init(new_handle0.dispatcher());
 
+    // 返回默认权限和两个新得到的ChannelDispatcher指针
     *rights = default_rights();
     *handle0 = ktl::move(new_handle0);
     *handle1 = ktl::move(new_handle1);
@@ -213,7 +217,7 @@ zx_status_t ChannelDispatcher::Write(zx_koid_t owner, MessagePacketPtr msg) {
     canary_.Assert();
 
     AutoReschedDisable resched_disable; // Must come before the lock guard.
-    resched_disable.Disable();
+    resched_disable.Disable();  // 禁止线程调度
     Guard<fbl::Mutex> guard{get_lock()};
 
     // Failing this test is only possible if this process has two threads racing:
@@ -222,7 +226,7 @@ zx_status_t ChannelDispatcher::Write(zx_koid_t owner, MessagePacketPtr msg) {
     if (owner != owner_)
         return ZX_ERR_BAD_HANDLE;
 
-    if (!peer_)
+    if (!peer_) // 如果peer_为空说明对方关闭了这个Channel
         return ZX_ERR_PEER_CLOSED;
 
     AssertHeld(*peer_->get_lock());

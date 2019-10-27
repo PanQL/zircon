@@ -338,7 +338,8 @@ void userboot_init(uint) {
     dprintf(SPEW, "userboot: %-23s @ %#" PRIxPTR "\n", "entry point", entry);
 
     // Start the process's initial thread.
-    auto arg1 = static_cast<uintptr_t>(hv);
+    auto arg1 = static_cast<uintptr_t>(hv);     // 传给userboot线程的第一个参数为一个Handle<ChannelDispatcher>的指针的编号（实例在process结构中）
+    // 第二个参数为vdso的基地址
     status = thread->Start(
         ThreadDispatcher::EntryState{entry, sp, arg1, vdso_base},
         /* initial_thread= */ true);

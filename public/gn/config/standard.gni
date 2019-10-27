@@ -6,7 +6,7 @@ import("$zx/public/gn/prebuilt.gni")
 
 # All the $current_cpu values that `current_os == "fuchsia"` supports.
 standard_fuchsia_cpus = [
-  "arm64",
+  # "arm64",
   "x64",
 ]
 
@@ -14,10 +14,10 @@ standard_fuchsia_cpus = [
 # build will define toolchains for all of these.  Successful
 # cross-compilation may require that a sysroot be installed and configured.
 standard_build_hosts = [
-  {
-    cpu = "arm64"
-    os = "linux"
-  },
+  # {
+  #   cpu = "arm64"
+  #   os = "linux"
+  # },
   {
     cpu = "x64"
     os = "linux"

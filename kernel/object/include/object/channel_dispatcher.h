@@ -117,7 +117,7 @@ private:
     void WriteSelf(MessagePacketPtr msg) TA_REQ(get_lock());
     zx_status_t UserSignalSelf(uint32_t clear_mask, uint32_t set_mask) TA_REQ(get_lock());
 
-    MessageList messages_ TA_GUARDED(get_lock());
+    MessageList messages_ TA_GUARDED(get_lock());   // 消息队列
     uint64_t message_count_ TA_GUARDED(get_lock()) = 0;
     uint64_t max_message_count_ TA_GUARDED(get_lock()) = 0;
     // Tracks the process that is allowed to issue calls, for example write
@@ -125,8 +125,8 @@ private:
     // respect of the previous and current owner. We avoid locking and updating
     // the |owner_| if the new owner is kernel, which happens when the endpoint
     // is written into a channel or during process destruction.
-    zx_koid_t owner_ TA_GUARDED(get_lock()) = ZX_KOID_INVALID;
+    zx_koid_t owner_ TA_GUARDED(get_lock()) = ZX_KOID_INVALID;  // 默认的channel所有者是内核
 
     uint32_t txid_ TA_GUARDED(get_lock()) = 0;
-    WaiterList waiters_ TA_GUARDED(get_lock());
+    WaiterList waiters_ TA_GUARDED(get_lock());   // 等待者队列
 };
