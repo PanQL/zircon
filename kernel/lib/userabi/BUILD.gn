@@ -70,6 +70,7 @@ template("rodso") {
   rspfile_target = "$target_name.rsp"
   rspfile = "$target_gen_dir/$rspfile_target"
 
+  # 遍历deps中的target，将每一个target中的link_output这一项的值（如果有的话），输出成$rspfile_target中的一行
   link_output_rspfile(rspfile_target) {
     forward_variables_from(invoker,
                            [
@@ -86,7 +87,7 @@ template("rodso") {
     # This generated header file tells the kernel code where the segment
     # boundaries and entry points are.
     header_target = "$target_name-code.h"
-    header = "$target_gen_dir/$header_target"
+    header = "$target_gen_dir/$header_target" # 指定生成的头文件的名称，xx-code.h
 
     toolchain_utils_action(header_target) {
       forward_variables_from(invoker,
@@ -131,10 +132,10 @@ template("rodso") {
 
     # Embed the image itself.
     rodso_name = target_name
-    source_set("$target_name.image") {
+    source_set("$target_name.image") {  # 生成xx.image.S文件并编译。
       visibility = [ ":*" ]
       sources = [
-        "$target_gen_dir/$target_name.S",
+        "$target_gen_dir/$target_name.S",   # 需要注意的是，这里指的是xx.image.S这样的名字
       ]
 
       # The generated header is also needed to tell .incbin how much of the
