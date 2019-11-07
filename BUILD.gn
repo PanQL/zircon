@@ -251,8 +251,8 @@ foreach(cpu, standard_fuchsia_cpus) {
       "$zx/kernel",
       "$zx/system/core",
       "$zx/system/dev",
-      "$zx/system/uapp",
-      "$zx/third_party/uapp",
+      # "$zx/system/uapp",
+      # "$zx/third_party/uapp",
     ]
     metadata = {
       legacy_barrier = []

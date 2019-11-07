@@ -55,6 +55,9 @@ void boot_alloc_init() {
     boot_alloc_end = reinterpret_cast<paddr_t>(_end);
 }
 
+/*
+ * 保留[start, start + len)不用于分配。即将start向高位移动
+ */
 void boot_alloc_reserve(paddr_t start, size_t len) {
     uintptr_t end = ALIGN((start + len), PAGE_SIZE);
 
@@ -70,6 +73,9 @@ void boot_alloc_reserve(paddr_t start, size_t len) {
     }
 }
 
+/*
+ * 分配len大小的一块内存，返回首地址
+ */
 void* boot_alloc_mem(size_t len) {
     uintptr_t ptr;
 

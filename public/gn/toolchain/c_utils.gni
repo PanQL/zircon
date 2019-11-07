@@ -138,7 +138,6 @@ template("toolchain_utils_action") {
         script = script
         args = []
       }
-      print("the script name is ", script)
       args += utils_paths + invoker.args
     } else {
       script = rebase_path(utils_paths[0], "", root_build_dir)

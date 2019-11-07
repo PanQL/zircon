@@ -56,6 +56,7 @@ extern "C" {
 
 #define LOCAL_TRACE 0
 
+// 在start.S中初始化，实际是multiboot传给start.S的
 extern zbi_header_t* _zbi_base;
 
 pc_bootloader_info_t bootloader;
@@ -165,6 +166,7 @@ static void process_zbi(zbi_header_t* hdr, uintptr_t phys) {
         return;
     }
 
+    // TODO： 还没有初始化debug输出，为什么print得了？？？
     printf("zbi: @ %p (%u bytes)\n", image.Base(), image.Length());
 
     result = image.ForEach(process_zbi_item, nullptr);
@@ -192,6 +194,10 @@ static void platform_save_bootloader_data(void) {
 static void* ramdisk_base;
 static size_t ramdisk_size;
 
+/* 
+ * 保留ramdisk的内存区域
+ * 根据从bootloader(multiboot)中传来的ramdisk基地址和大小的信息，将这一片内存区域设置为保留区域
+ */
 static void platform_preserve_ramdisk(void) {
     if (bootloader.ramdisk_size == 0) {
         return;
@@ -761,6 +767,11 @@ void platform_halt_secondary_cpus(void) {
     DEBUG_ASSERT(result == ZX_OK);
 }
 
+/*
+ * 进行debug输出相关的初始化设置
+ * 保存bootloader传递过来的硬件信息
+ * 对kernel和ramdisk所在的内存区域进行保留
+ */
 void platform_early_init(void) {
     /* call before bootloader data is populated, since we want to
      * let the bootloader data override this */
@@ -774,6 +785,7 @@ void platform_early_init(void) {
     dlog_bypass_init();
 
     /* get the debug output working */
+    // 根据cmdline中的kernel.serial参数，进行debug输出的串口初始化
     pc_init_debug_early();
 
 #if WITH_LEGACY_PC_CONSOLE

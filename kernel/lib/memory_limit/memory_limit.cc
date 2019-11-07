@@ -67,6 +67,10 @@ static void print_reserve_state(void) {
     }
 }
 
+/*
+ * 检查cmdline中是否传入了memory limit相关的参数
+ * 返回解析结果
+ */
 zx_status_t memory_limit_init() {
     if (!SystemMemoryLimit) {
         ReservedRegionCount = 0;

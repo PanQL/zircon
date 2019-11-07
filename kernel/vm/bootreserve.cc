@@ -22,11 +22,17 @@ static const size_t NUM_RESERVES = 16;
 static reserve_range_t res[NUM_RESERVES];
 static size_t res_idx;
 
+/* 
+ * 在`保留内存`数组中，保留kernel所在区域的内存
+ */
 void boot_reserve_init() {
     // add the kernel to the boot reserve list
     boot_reserve_add_range(get_kernel_base_phys(), get_kernel_size());
 }
 
+/*
+ * 将[pa, pa + len)这片内存区域设置为保留区域，记录到res数组(`保留内存`数组)中。
+ */
 zx_status_t boot_reserve_add_range(paddr_t pa, size_t len) {
     dprintf(INFO, "PMM: boot reserve add [%#" PRIxPTR ", %#" PRIxPTR "]\n", pa, pa + len - 1);
 
@@ -62,6 +68,9 @@ zx_status_t boot_reserve_add_range(paddr_t pa, size_t len) {
 }
 
 // iterate through the reserved ranges and mark them as WIRED in the pmm
+/*
+ * 将`保留内存`数组中保留的内存换算成对应的页，从pmm中分配出来，然后将这些页设置为WIRE状态
+ */ 
 void boot_reserve_wire() {
     static list_node reserved_page_list = LIST_INITIAL_VALUE(reserved_page_list);
 

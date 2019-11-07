@@ -6,6 +6,7 @@ import("$zx/public/gn/host_tool_action.gni")
 import("abigen.gni")
 
 if (current_toolchain == default_toolchain) {
+  # 这是abi生成的第一步，借助prebuilt的banjo编译器，将syscalls.banjo编译为out/gen/syscalls.abigen
   host_tool_action("generate_syscalls.abigen") {
     tool = "$zx/tools/banjo:compiler"
     sources = [
