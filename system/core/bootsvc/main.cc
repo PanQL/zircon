@@ -122,13 +122,13 @@ void LaunchNextProcess(fbl::RefPtr<bootsvc::BootfsService> bootfs,
   // Split the bootsvc.next value into 1 or more arguments using ',' as a
   // delimiter.
   printf("bootsvc: bootsvc.next = %s\n", bootsvc_next);
-  fbl::Vector<fbl::String> next_args = bootsvc::SplitString(bootsvc_next, ',');
+  fbl::Vector<fbl::String> next_args = bootsvc::SplitString(bootsvc_next, ','); // 逗号分隔，第一个为程序名称，后面为参数
 
   // Open the executable we will start next
   zx::vmo program;
   uint64_t file_size;
   const char* next_program = next_args[0].c_str();
-  zx_status_t status = bootfs->Open(next_program, &program, &file_size);
+  zx_status_t status = bootfs->Open(next_program, &program, &file_size);  // 从文件系统中打开next_program，内容读取到program，文件大小写入file_size
   ZX_ASSERT_MSG(status == ZX_OK, "bootsvc: failed to open '%s': %s\n", next_program,
                 zx_status_get_string(status));
 

@@ -213,7 +213,7 @@ zx_handle_t reserve_low_address_space(zx_handle_t log, zx_handle_t root_vmar) {
     bootfs_mount(vmar_self.get(), log.get(), bootfs_vmo.get(), &bootfs);
 
     // Pass the decompressed bootfs VMO on.
-    handles[kBootfsVmo] = bootfs_vmo.release();
+    handles[kBootfsVmo] = bootfs_vmo.release(); // bootfs_vmo实际在用户态也只是维护一个zx_handle_t
 
     // Canonicalize the (possibly empty) userboot.root option string so that
     // it never starts with a slash but always ends with a slash unless it's
@@ -246,8 +246,9 @@ zx_handle_t reserve_low_address_space(zx_handle_t log, zx_handle_t root_vmar) {
     // Create the process itself.
     zx::process proc;
     zx::vmar vmar;
-    zx::unowned_job root_job{handles[kRootJob]};
+    zx::unowned_job root_job{handles[kRootJob]};    // 本进程的job也就是子进程的job，传承下去
     const char* filename = o.value[OPTION_FILENAME];
+    // 创建子进程
     status = zx::process::create(
         *root_job, filename, static_cast<uint32_t>(strlen(filename)), 0,
         &proc, &vmar);
@@ -258,6 +259,7 @@ zx_handle_t reserve_low_address_space(zx_handle_t log, zx_handle_t root_vmar) {
 
     // Create the initial thread in the new process
     zx::thread thread;
+    // 创建子进程的第一个线程
     status = zx::thread::create(
         proc, filename, static_cast<uint32_t>(strlen(filename)), 0, &thread);
     check(log.get(), status, "zx_thread_create");
@@ -309,6 +311,7 @@ zx_handle_t reserve_low_address_space(zx_handle_t log, zx_handle_t root_vmar) {
     check(log.get(), status,
           "zx_handle_duplicate failed on child thread handle");
 
+    // 检查最后将会传递给子进程的所有的handle
     for (const auto& h : handles) {
         zx_info_handle_basic_t info;
         status = zx_object_get_info(h, ZX_INFO_HANDLE_BASIC,
@@ -320,6 +323,7 @@ zx_handle_t reserve_low_address_space(zx_handle_t log, zx_handle_t root_vmar) {
 
     // Now send the bootstrap message.  This transfers away all the handles
     // we have left except the process and thread themselves.
+    // 同时给子进程发送消息和handle数组。注意，这时子进程还没启动
     status = to_child.write(0, &child_message, sizeof(child_message),
                             handles.data(), handles.size());
     check(log.get(), status, "zx_channel_write to child failed");

@@ -236,10 +236,15 @@ void bootstrap_vmos(Handle** handles) {
     ASSERT(status == ZX_OK);
 }
 
+/*
+ * userboot_init - 该函数创建第一个用户进程userboot并启动
+ */
 void userboot_init(uint) {
     // Prepare the bootstrap message packet.  This puts its data (the
     // kernel command line) in place, and allocates space for its handles.
     // We'll fill in the handles as we create things.
+    // 创建一个新的MessagePacket msg，将kernel_cmdline写入，然后创建一个
+    // 可变引用handles指向其中的handle数组
     MessagePacketPtr msg;
     zx_status_t status = MessagePacket::Create(
         __kernel_cmdline, static_cast<uint32_t>(__kernel_cmdline_size),
@@ -266,8 +271,8 @@ void userboot_init(uint) {
         Handle::Make(ktl::move(vmar_handle), vmar_rights);
     ASSERT(proc_handle_owner);
     ASSERT(vmar_handle_owner);
-    handles[userboot::kProcSelf] = proc_handle_owner.release();
-    handles[userboot::kVmarRootSelf] = vmar_handle_owner.release();
+    handles[userboot::kProcSelf] = proc_handle_owner.release(); // 记录新进程中指向新进程本身的handle号
+    handles[userboot::kVmarRootSelf] = vmar_handle_owner.release(); // 记录为新进程创建的vmar的handle
 
     // It gets the root resource and job handles.
     handles[userboot::kRootResource] = get_resource_handle().release();

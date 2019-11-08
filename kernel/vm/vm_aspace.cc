@@ -50,6 +50,9 @@ static fbl::DoublyLinkedList<VmAspace*> aspaces TA_GUARDED(aspace_list_lock);
 // Called once at boot to initialize the singleton kernel address
 // space. Thread safety analysis is disabled since we don't need to
 // lock yet.
+/*
+ * 创建供内核使用的虚存空间
+ */
 void VmAspace::KernelAspaceInitPreHeap() TA_NO_THREAD_SAFETY_ANALYSIS {
     // the singleton kernel address space
     static VmAspace _kernel_aspace(KERNEL_ASPACE_BASE, KERNEL_ASPACE_SIZE, VmAspace::TYPE_KERNEL, "kernel");
