@@ -28,6 +28,12 @@
 extern const struct lk_init_struct __start_lk_init[];
 extern const struct lk_init_struct __stop_lk_init[];
 
+/*
+ * 所有通过LK_INIT_HOOK/LK_INIT_HOOK_FLAGS注册的函数，
+ * 都会被放在.data.rel.ro.lk_init，并指定启动等级。这里对
+ * 给定等级范围的函数进行调用。
+ * LK_INIT_HOOK/LK_INIT_HOOK_FLAGS定义在$zx/kernel/include/init.h中。
+ */
 void lk_init_level(enum lk_init_flags required_flag, uint start_level, uint stop_level) {
     LTRACEF("flags %#x, start_level %#x, stop_level %#x\n",
             (uint)required_flag, start_level, stop_level);
