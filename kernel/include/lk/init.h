@@ -57,6 +57,8 @@ static inline void lk_init_level_all(enum lk_init_flags flags)
     lk_init_level(flags, LK_INIT_LEVEL_EARLIEST, LK_INIT_LEVEL_LAST);
 }
 
+void print_all_lk_init();
+
 struct lk_init_struct {
     uint level;
     uint flags;

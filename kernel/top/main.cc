@@ -54,14 +54,23 @@ void lk_main() {
     call_constructors();
 
     // early arch stuff
+    // [0x1, 0xffff]
     lk_primary_cpu_init_level(LK_INIT_LEVEL_EARLIEST, LK_INIT_LEVEL_ARCH_EARLY - 1);
     arch_early_init();
 
     // do any super early platform initialization
+    // [0x10000, 0x1ffff]
+    /*
+     * code_patching in $zx/kernel/lib/code_patching.cc
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_ARCH_EARLY, LK_INIT_LEVEL_PLATFORM_EARLY - 1);
     platform_early_init();
 
     // do any super early target initialization
+    // [0x20000, 0x2ffff]
+    /*
+     * 
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_PLATFORM_EARLY, LK_INIT_LEVEL_TARGET_EARLY - 1);
     target_early_init();
 
@@ -69,24 +78,52 @@ void lk_main() {
 
     dprintf(INFO, "KASLR: .text section at %p\n", __code_start);
 
+    // [0x30000, 0x3ffff]
+    /*
+     * global_prng_seed in $zx/kernel/lib/crypto/global_crypto.cc
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_TARGET_EARLY, LK_INIT_LEVEL_VM_PREHEAP - 1);
     dprintf(SPEW, "initializing vm pre-heap\n");
     vm_init_preheap();
 
     // bring up the kernel heap
+    // [0x40000, 0x4ffff]
+    /*
+     * elf_build_id in $zx/kernel/lib/version/version.cc
+     * version in $zx/kernel/lib/version/version.cc
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_VM_PREHEAP, LK_INIT_LEVEL_HEAP - 1);
     dprintf(SPEW, "initializing heap\n");
     heap_init();
 
+    // [0x50000, 0x5ffff]
+    /*
+     * console in $zx/kernel/lib/console/console.cc
+     * x86_resource_init in $zx/kernel/platform/pc/memory.cc
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_HEAP, LK_INIT_LEVEL_VM - 1);
     dprintf(SPEW, "initializing vm\n");
     vm_init();
 
     // initialize the kernel
+    // [0x60000, 0x6ffff]
+    /*
+     * display_memtype in $zx/kernel/platform/pc/memory.cc
+     * acpi_tables in $zx/kernel/lib/acpi_tables/acpi_tables.cc
+     * hpet in $zx/kernel/platform/pc/hpet.cc
+     * apic in $zx/kernel/platform/pc/interrupt.cc
+     * system_topology_init in $zx/kernel/arch/x86/system_topology.cc
+     * timer in $zx/kernel/platform/pc/timer.cc
+     * percpu_heap_init in $zx/kernel/kernel/percpu.cc
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_VM, LK_INIT_LEVEL_KERNEL - 1);
     dprintf(SPEW, "initializing kernel\n");
     kernel_init();
 
+    // [0x70000, 0x7ffff]
+    /*
+     * global_prng_thread_safe in $zx/kernel/lib/crypto/global_crypto.cc
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_KERNEL, LK_INIT_LEVEL_THREADING - 1);
 
     // create a thread to complete system initialization
@@ -102,20 +139,43 @@ void lk_main() {
 static int bootstrap2(void*) {
     dprintf(SPEW, "top of bootstrap2()\n");
 
+    // [0x80000, 0x8ffff]
+    /*
+     * libobject in $zx/kernel/object/glue.cc
+     * dpc in
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_THREADING, LK_INIT_LEVEL_ARCH - 1);
     arch_init();
 
     // initialize the rest of the platform
     dprintf(SPEW, "initializing platform\n");
+    // [0x90000, 0x9ffff]
+    /*
+     * x86_perfmon in $zx/kernel/arch/x86/perf_mon.cc
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_ARCH, LK_INIT_LEVEL_PLATFORM - 1);
     platform_init();
 
     // initialize the target
     dprintf(SPEW, "initializing target\n");
+    // [0xa0000, 0xaffff]
+    /*
+     * x86_pcie_init in $zx/kernel/platform/pc/platform_pcie.cc
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_PLATFORM, LK_INIT_LEVEL_TARGET - 1);
     target_init();
 
+    // print all lk_hook we can call
+    print_all_lk_init();
     dprintf(SPEW, "moving to last init level\n");
+    // [0xb0000, 0xffffffff]
+    /*
+     * debuglog in $zx/kernel/lib/debuglog/debuglog.cc
+     * kcounters in $zx/kernel/lib/counters/counters.cc
+     * ktrace in $zx/kernel/lib/ktrace/ktrace.cc
+     * kernel_shell in $zx/kernel/lib/console/console.cc
+     * userboot in $zx/kernel/lib/userabi/userboot.cc
+     */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_TARGET, LK_INIT_LEVEL_LAST);
 
     return 0;
