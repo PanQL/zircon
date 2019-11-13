@@ -94,3 +94,9 @@ void lk_init_level(enum lk_init_flags required_flag, uint start_level, uint stop
         last = found;
     }
 }
+
+void print_all_lk_init() {
+    for (const struct lk_init_struct* ptr = __start_lk_init; ptr != __stop_lk_init; ptr++) {
+        LTRACEF("LK_INIT_INFO : at %p (%s) level %#x, flags %#x \n", ptr, ptr->name, ptr->level, ptr->flags);
+    }
+}
