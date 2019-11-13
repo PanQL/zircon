@@ -1,0 +1,17 @@
+{
+    "git.ignoreLimitWarning": true,
+    "files.associations": {
+        "__hash_table": "cpp",
+        "deque": "cpp",
+        "*.def": "cpp",
+        "fstream": "cpp",
+        "future": "cpp",
+        "thread": "cpp",
+        "memory": "cpp",
+        "*.inc": "cpp",
+        "syscalls.h": "c",
+        "dirent.h": "c",
+        "definitions.h": "c",
+        "array": "cpp"
+    }
+}
