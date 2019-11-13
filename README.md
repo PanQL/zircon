@@ -2,6 +2,8 @@
 这是从Fuchsia官方的20190715版本代码仓库中分离出来的Zircon代码，用于进行Zircon内核学习。可以通过简陋的Makefile脚本进行编译并在qemu上运行。  
 目前支持在ubuntu 18.04上编译运行，Mac用户可能需要补全prebuilt目录下的mac版本的clang/gcc。（注意，官方clang大概率还不能编译，可考虑拉取google官方修改的prebuilt工具）  
 一些我们关于zircon的分析放在[这里](https://github.com/PanQL/zircon-notes)，欢迎补充！  
+### 关于代码分析工具  
+[这里](https://fuchsia.googlesource.com/fuchsia/+/refs/heads/master/docs/development/languages/c-cpp/editors.md)是适用于fuchsia仓库的文档(需要科学上网)。我们使用vscode，相关的vscode设置在仓库中的.vscode目录，希望有所帮助。  
 ----  
 
 Zircon is the core platform that powers the Fuchsia OS.  Zircon is
