@@ -3,7 +3,9 @@
 目前支持在ubuntu 18.04上编译运行，Mac用户可能需要补全prebuilt目录下的mac版本的clang/gcc。（注意，官方clang大概率还不能编译，可考虑拉取google官方修改的prebuilt工具）  
 一些我们关于zircon的分析放在[这里](https://github.com/PanQL/zircon-notes)，欢迎补充！  
 ### 关于代码分析工具  
-[这里](https://fuchsia.googlesource.com/fuchsia/+/refs/heads/master/docs/development/languages/c-cpp/editors.md)是适用于fuchsia仓库的文档(需要科学上网)。我们使用vscode，相关的vscode设置在仓库中的.vscode目录，希望有所帮助。  
+* [这里](https://fuchsia.googlesource.com/fuchsia/+/refs/heads/master/docs/development/languages/c-cpp/editors.md)是适用于fuchsia仓库的文档(需要科学上网)。我们使用vscode，相关的vscode设置在仓库中的.vscode目录，希望有所帮助。  
+* 解析代码依赖的compile_commands.json将会随build过程生成到out文件夹，建议先成功build再用vscode打开zircon目录。  
+
 ----  
 
 Zircon is the core platform that powers the Fuchsia OS.  Zircon is
