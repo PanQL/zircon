@@ -1,10 +1,18 @@
 # Zircon  
 这是从Fuchsia官方的20190715版本代码仓库中分离出来的Zircon代码，用于进行Zircon内核学习。可以通过简陋的Makefile脚本进行编译并在qemu上运行。  
-目前支持在ubuntu 18.04上编译运行，Mac用户可能需要补全prebuilt目录下的mac版本的clang/gcc。（注意，官方clang大概率还不能编译，可考虑拉取google官方修改的prebuilt工具）  
+目前支持在ubuntu 18.04和Mac上编译运行。  
 一些我们关于zircon的分析放在[这里](https://github.com/PanQL/zircon-notes)，欢迎补充！  
 ### 关于代码分析工具  
 * [这里](https://fuchsia.googlesource.com/fuchsia/+/refs/heads/master/docs/development/languages/c-cpp/editors.md)是适用于fuchsia仓库的文档(需要科学上网)。我们使用vscode，相关的vscode设置在仓库中的.vscode目录，希望有所帮助。  
 * 解析代码依赖的compile_commands.json将会随build过程生成到out文件夹，建议先成功build再用vscode打开zircon目录。  
+### 关于编译运行  
+为了减小仓库体积，我们将prebuilt目录进行了大幅调整;因此运行之前请下载google预编译好的clang，解压后放到某个权限合适的位置，然后在代码的[这个位置](https://github.com/PanQL/zircon/blob/master/public/gn/toolchain/clang.gni#L16)将**绝对目录**修改为对应位置。  
+* [云盘下载链接](https://cloud.tsinghua.edu.cn/d/7ab1d87feecd4b2cb3d8/)  
+* 官方CIPD包下载链接如下  
+    * [Linux](https://chrome-infra-packages.appspot.com/p/fuchsia/clang/linux-amd64/+/oEsFSe99FkcDKVxZkAY0MKi6C-yYOan1m-QL45N33W8C)  
+    * [Mac](https://chrome-infra-packages.appspot.com/p/fuchsia/clang/mac-amd64/+/Lc64-GTi4kihzkCnW8Vaa80TWTnMpZY0Fy6AqChmqvcC)  
+
+当前只支持在Mac OS及Linux x64上进行编译。  
 
 ----  
 
