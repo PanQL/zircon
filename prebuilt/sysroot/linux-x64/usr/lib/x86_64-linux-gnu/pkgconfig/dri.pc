@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib/x86_64-linux-gnu
+includedir=${prefix}/include
+dridriverdir=/usr/lib/x86_64-linux-gnu/dri
+
+Name: dri
+Description: Direct Rendering Infrastructure
+Version: 10.3.2
+Requires.private: libdrm >= 2.4.38
+Cflags: -I${includedir}
