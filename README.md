@@ -14,7 +14,10 @@
 
 当前只支持在Mac OS及Linux x64上进行编译。  
 
-我们当前只关注x64架构，如果对arm架构有兴趣，可以自行修改out/args.gn内的架构相关信息：x64->arm64。qemu的相关参数需要自行摸索。
+默认的`make run`和`make build`是针对x64架构的，如果希望编译运行arm架构的zircon，那么需要：
+* 修改out/args.gn中的`legacy-image-x64`为`legacy-image-arm64`  
+* 重新`make build`  
+* `make runarm`  
 
 ----  
 
