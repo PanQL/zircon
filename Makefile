@@ -1,5 +1,5 @@
 build: config
-	cd out && ../buildtools/ninja -j9
+	cd out && ../buildtools/ninja
 
 config:
 	buildtools/gn gen --export-compile-commands=x64 out
