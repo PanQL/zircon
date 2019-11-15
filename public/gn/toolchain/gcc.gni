@@ -8,7 +8,7 @@ declare_args() {
   # If $gcc_tool_dir is "", then this controls how the GCC toolchain
   # binaries are found.  If true, the standard prebuilt is used.  If false,
   # the tools are just expected to be found in PATH.
-  use_prebuilt_gcc = true
+  use_prebuilt_gcc = false
 
   # Directory where the GCC toolchain binaries ("gcc", "nm", etc.) are
   # found.  If this is "", then the behavior depends on $use_prebuilt_gcc.
@@ -31,7 +31,6 @@ gcc_version_string = gcc_tool_dir
 if (gcc_tool_dir == "" && use_prebuilt_gcc) {
   _prebuilt_gcc_dir = "$prebuilt_dir/third_party/gcc/$host_platform"
   gcc_tool_dir = "$_prebuilt_gcc_dir/bin"
-  _prebuilt_cipd_version =
-      read_file("$_prebuilt_gcc_dir/.versions/gcc.cipd_version", "json")
-  gcc_version_string = _prebuilt_cipd_version.instance_id
+  _prebuilt_cipd_version = "go_away_stupid_cipd"
+  gcc_version_string = "go_away_stupid_cipd"
 }

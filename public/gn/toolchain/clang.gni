@@ -8,12 +8,12 @@ declare_args() {
   # If $clang_tool_dir is "", then this controls how the Clang toolchain
   # binaries are found.  If true, then the standard prebuilt is used.
   # Otherwise the tools are just expected to be found by the shell via `PATH`.
-  use_prebuilt_clang = true
+  use_prebuilt_clang = false
 
   # Directory where the Clang toolchain binaries ("clang", "llvm-nm", etc.) are
   # found.  If this is "", then the behavior depends on $use_prebuilt_clang.
   # This toolchain is expected to support both Fuchsia targets and the host.
-  clang_tool_dir = ""
+  clang_tool_dir = "/home/pan/clang/bin"
 }
 
 # This is a string identifying the particular toolchain version in use.  Its
@@ -28,9 +28,8 @@ clang_version_string = clang_tool_dir
 if (clang_tool_dir == "" && use_prebuilt_clang) {
   _prebuilt_clang_dir = "$prebuilt_dir/third_party/clang/$host_platform"
   clang_tool_dir = "$_prebuilt_clang_dir/bin"
-  _prebuilt_cipd_version =
-      read_file("$_prebuilt_clang_dir/.versions/clang.cipd_version", "json")
-  clang_version_string = _prebuilt_cipd_version.instance_id
+  _prebuilt_cipd_version = "go_away_stupid_cipd"
+  clang_version_string = "go_away_stupid_cipd"
 }
 
 _clang_lib_dir = "$clang_tool_dir/../lib"

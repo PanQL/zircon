@@ -53,6 +53,17 @@ void event_destroy(event_t* e) {
     wait_queue_destroy(&e->wait);
 }
 
+/**
+ * @brief 实际对event对象进行wait操作的函数
+ * 
+ * 首先将当前线程的interruptable设置为`interruptable`。然后对`e`的signaled状态进行分析，查看是否正处于被某一个signaled作用的状态：
+ * 如果是：
+ *    检查`e`是否是AUTOUNSIGNAL的：
+ *       如果是，则`e`的signaled状态被本次wait直接抵消，函数正常返回
+ *       否则，函数可以直接返回，但是`e`的signaled状态无法消除
+ * 否则：
+ *    调用阻塞函数，将当前线程加入到`e`的等待队列中，线程睡眠。(TODO 需要知道这里deadline的具体作用)
+ */
 static zx_status_t event_wait_worker(event_t* e,
                                      const Deadline& deadline,
                                      bool interruptable,
@@ -65,8 +76,12 @@ static zx_status_t event_wait_worker(event_t* e,
 
     Guard<spin_lock_t, IrqSave> guard{ThreadLock::Get()};
 
+    // TOKNOW：这个地方的interruptable指什么？
     current_thread->interruptable = interruptable;
 
+    // 如果该event已经接收过signal，处于signaled状态，则判断这个event是否是EVENT_FLAG_AUTOUNSIGNAL的。
+    // 是：则将e的signaled状态置为false。即未收到过信号。
+    // 否：则阻塞当前线程，将当前线程加入到等待队列中去。
     if (e->signaled) {
         /* signaled, we're going to fall through */
         if (e->flags & EVENT_FLAG_AUTOUNSIGNAL) {
