@@ -14,6 +14,8 @@
 
 当前只支持在Mac OS及Linux x64上进行编译。  
 
+我们当前只关注x64架构，如果对arm架构有兴趣，可以自行修改out/args.gn内的架构相关信息：x64->arm64。qemu的相关参数需要自行摸索。
+
 ----  
 
 Zircon is the core platform that powers the Fuchsia OS.  Zircon is
