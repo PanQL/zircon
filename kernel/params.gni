@@ -56,4 +56,8 @@ declare_args() {
   # to assess whether the tests build and *fail correctly* when lockdep is
   # disabled.
   enable_lock_dep_tests = enable_lock_dep
+
+  # 是否用外部ELF文件替代zircon的内核
+  use_external_elf = true
+  external_elf_path = "/home/pan/Code/zircon/zcore.elf"
 }

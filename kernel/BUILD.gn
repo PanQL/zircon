@@ -217,31 +217,48 @@ if (current_toolchain == default_toolchain) {
     }
   }
 
-  # This is the kernel proper, an ELF executable with full symbols.
-  # It's the file to use with a debugger, for example.
-  executable("zircon") {
-    visibility = [ ":*" ]
+  if(!use_external_elf) {
+    # This is the kernel proper, an ELF executable with full symbols.
+    # It's the file to use with a debugger, for example.
+    # 在这里编译得到初始的zcore镜像，考虑替换为zcore.elf
+    executable("zircon") {
+      visibility = [ ":*" ]
 
-    # $zx/scripts/zircon.elf-gdb.py expects kernel symbols in "zircon.elf".
-    output_extension = "elf"
+      # $zx/scripts/zircon.elf-gdb.py expects kernel symbols in "zircon.elf".
+      output_extension = "elf"
 
-    ldflags = [
-      "-Wl,-T," + rebase_path("kernel.ld", root_build_dir),
-      "-Wl,--emit-relocs",
-    ]
-    inputs = [
-      "kernel.ld",
-    ]
-    configs += [ ":kernel_defsym" ]
+      ldflags = [
+        "-Wl,-T," + rebase_path("kernel.ld", root_build_dir),
+        "-Wl,--emit-relocs",
+      ]
+      inputs = [
+        "kernel.ld",
+      ]
+      configs += [ ":kernel_defsym" ]
 
-    deps = [
-      ":test",  # TODO: make optional, add testonly taint
-      "top",
-    ]
-    if (current_cpu == "arm64") {
-      deps += [ "platform/generic-arm" ]
-    } else if (current_cpu == "x64") {
-      deps += [ "target/pc" ]
+      deps = [
+        ":test",  # TODO: make optional, add testonly taint
+        "top",
+      ]
+      if (current_cpu == "arm64") {
+        deps += [ "platform/generic-arm" ]
+      } else if (current_cpu == "x64") {
+        deps += [ "target/pc" ]
+      }
+    }
+  }else{
+
+    group("zircon") {
+      # deps = []
+      # if (current_cpu == "arm64") {
+      #   deps += [ "platform/generic-arm" ]
+      # } else if (current_cpu == "x64") {
+      #   deps += [ "target/pc" ]
+      # }
+      metadata = {
+        # link_output = ["/home/pan/Code/zircon/zcore.elf"]
+        link_output = ["$external_elf_path"]
+      }
     }
   }
 
@@ -466,5 +483,12 @@ if (current_toolchain == default_toolchain) {
     deps = [
       ":kernel",
     ]
+    if(use_external_elf) {
+      if (current_cpu == "arm64") {
+        deps += [ "platform/generic-arm" ]
+      } else if (current_cpu == "x64") {
+        deps += [ "target/pc" ]
+      }
+    }
   }
 }
