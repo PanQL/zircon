@@ -225,8 +225,8 @@ private:
 
     fbl::Canary<fbl::magic("DISP")> canary_;
 
-    const zx_koid_t koid_;
-    ktl::atomic<uint32_t> handle_count_;
+    const zx_koid_t koid_;  // 对应的Object的id
+    ktl::atomic<uint32_t> handle_count_;    // 正在使用该dispatcher的handle数量
 
     zx_signals_t signals_ TA_GUARDED(get_lock());
 
@@ -387,7 +387,7 @@ protected:
     const fbl::Canary<CanaryTag<Self>::magic> canary_;
 
     zx_koid_t peer_koid_ = 0u;  // 对方的kernel object id
-    fbl::RefPtr<Self> peer_ TA_GUARDED(get_lock());
+    fbl::RefPtr<Self> peer_ TA_GUARDED(get_lock()); // 指向对方Object的指针
 
 private:
     const fbl::RefPtr<PeerHolder<Self>> holder_;
