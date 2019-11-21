@@ -1,3 +1,10 @@
+# ZCore  
+我们修改了gn的脚本，使得在[params.gni](https://github.com/PanQL/zircon/blob/zcore/kernel/params.gni#L61)能够设置是否使用外部的ELF内核映像，以及外部内核映像所在的绝对路径。这样，我们可以使用其他语言开发的内核来构建整个fuchsia。
+默认情况下，use\_external\_elf选项是打开的，所以在运行之前可以简单将其关闭，或者修改external\_elf\_path为仓库顶层目录下的zcore.elf(或其他自己写的ELF格式内核映像所在位置)  
+Fuchsia对于ELF格式内核映像的要求有以下几点：  
+* 在boot阶段的早期需要调用fixups代码修正KASLR，且设置某些段中的代码为位置无关。具体参考[start.S](https://github.com/PanQL/zircon/blob/zcore/kernel/arch/x86/start.S)  
+* 内核启动时将会得到一个指向zbi格式的文件的指针，其中包含了BOOTFS、物理内存信息、CMDLINE等启动过程必需的信息，所以外部提供的内核ELF应当具有解析zbi格式的文件的能力。  
+
 # Zircon  
 这是从Fuchsia官方的20190715版本代码仓库中分离出来的Zircon代码，用于进行Zircon内核学习。可以通过简陋的Makefile脚本进行编译并在qemu上运行。  
 目前支持在ubuntu 18.04和Mac上编译运行。  
