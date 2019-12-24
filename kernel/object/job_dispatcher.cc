@@ -395,6 +395,7 @@ bool JobDispatcher::Kill(int64_t return_code) {
     return true;
 }
 
+// 是否可以对该job设置policy，仅当当前job为空job时允许对该job设置policy
 bool JobDispatcher::CanSetPolicy() TA_REQ(get_lock()) {
     // Can't set policy when there are active processes or jobs. This constraint ensures that a
     // process's policy cannot change over its lifetime.  Because a process's policy cannot change,

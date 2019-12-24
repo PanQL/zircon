@@ -54,9 +54,9 @@ zx_status_t sys_object_wait_one(zx_handle_t handle_value,
         Guard<BrwLockPi, BrwLockPi::Reader> guard{up->handle_table_lock()};
 
         Handle* handle = up->GetHandleLocked(handle_value);
-        if (!handle)
+        if (!handle)    // `handle`指向的kobj不存在的，这是个错误的handle
             return ZX_ERR_BAD_HANDLE;
-        if (!handle->HasRights(ZX_RIGHT_WAIT))
+        if (!handle->HasRights(ZX_RIGHT_WAIT))  // 想等待的这个object没有WAIT权限
             return ZX_ERR_ACCESS_DENIED;
 
         result = wait_state_observer.Begin(&event, handle, signals);
