@@ -8,7 +8,7 @@
 ENTRY(_start)
 SECTIONS
 {
-    . = 0;
+    . = 0x80000;
 
     .text.boot0 : {
         *(.text.boot0)

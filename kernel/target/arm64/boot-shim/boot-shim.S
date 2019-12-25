@@ -43,7 +43,7 @@ header_end:
     // what EL are we running at?
     mrs     tmp, CurrentEL
     cmp     tmp, #(1 << 2)
-    beq     cache_disable_el1
+    beq     cache_disable_el1   // 如果当前处于Exception level 1则跳转到cache_disable_el1
 
     // Disable caches and MMU (EL2 version)
     mrs     tmp, sctlr_el2
@@ -83,3 +83,23 @@ LOCAL_DATA(stack)
     .skip STACK_SIZE
 LOCAL_DATA(stack_end)
 END_DATA(stack)
+
+.section .text.util,"ax"
+FUNCTION(delay)
+_delay:
+	subs x0, x0, #1
+	bne _delay
+	ret
+END_FUNCTION(delay)
+
+.section .text.util,"ax"
+FUNCTION(put32)
+	str w1,[x0]
+	ret
+END_FUNCTION(put32)
+
+.section .text.util,"ax"
+FUNCTION(get32)
+	ldr w0,[x0]
+	ret
+END_FUNCTION(get32)

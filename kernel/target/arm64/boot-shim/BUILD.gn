@@ -55,6 +55,9 @@ template("boot_shim") {
         "${board}-uart.c",
         "boot-shim.c",
       ]
+      if(target_name == "rpi3"){
+        sources += ["utils.S",]
+      }
 
       # TODO(mcgrathr): Move these to ./$board-config.h and use a -D.
       include_dirs = [ "$zx/kernel/target/arm64/board/$board" ]
@@ -179,4 +182,7 @@ boot_shim("qemu") {
     name = "qemu-kernel"
     type = "kernel"
   }
+}
+
+boot_shim("rpi3"){
 }

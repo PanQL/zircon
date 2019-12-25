@@ -13,7 +13,7 @@ declare_args() {
   # Directory where the Clang toolchain binaries ("clang", "llvm-nm", etc.) are
   # found.  If this is "", then the behavior depends on $use_prebuilt_clang.
   # This toolchain is expected to support both Fuchsia targets and the host.
-  clang_tool_dir = "/home/pan/clang/bin"
+  clang_tool_dir = "/home/pan/Downloads/clang/bin"
 }
 
 # This is a string identifying the particular toolchain version in use.  Its

@@ -4,5 +4,6 @@ hikey960
 qemu
 vim2
 imx8mevk
+rpi3
 [x64]
 pc

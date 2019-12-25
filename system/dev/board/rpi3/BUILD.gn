@@ -1,0 +1,11 @@
+driver("rpi3") {
+  sources = [
+  ]
+  deps = [
+  ]
+  if (current_cpu == "arm64") {
+    data_deps = [
+      "$zx/kernel/target/arm64/boot-shim:rpi3",
+    ]
+  }
+}
