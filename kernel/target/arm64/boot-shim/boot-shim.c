@@ -189,7 +189,7 @@ static void append_from_device_tree(zbi_header_t* zbi,
                                     device_tree_context_t* ctx) {
     // look for optional RAM size in device tree
     // do this last so device tree can override value in boot-shim-config.h
-    if (ctx->memory_size) {
+    if (ctx->memory_size) { // 如果从dtb中探测到内存，将内存信息添加到zbi文件中
         zbi_mem_range_t mem_range;
         mem_range.paddr = ctx->memory_base;
         mem_range.length = ctx->memory_size;
@@ -207,7 +207,7 @@ static void append_from_device_tree(zbi_header_t* zbi,
     }
 
     // append kernel command line
-    if (ctx->cmdline && ctx->cmdline_length) {
+    if (ctx->cmdline && ctx->cmdline_length) {  // 如果从dtb中检测到cmdline，将其添加到zbi文件中
         append_boot_item(zbi, ZBI_TYPE_CMDLINE, 0,
                          ctx->cmdline, ctx->cmdline_length);
     }
