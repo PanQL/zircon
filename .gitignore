@@ -27,3 +27,5 @@ compile_commands.json
 CMakeLists.txt
 cmake-build-debug/
 temp.txt
+legacy-image-arm64.txt
+rpi.dts
