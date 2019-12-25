@@ -38,9 +38,19 @@ FUNCTION(_start)
     .align 3
 
 header_end:
-    // x0 typically points to device tree at entry
+# read cpu affinity, start core 0, halt rest
+    mrs     x1, mpidr_el1
+    and     x1, x1, #3
+    cbz     x1, setup
 
-    // what EL are we running at?
+halt:
+    # core affinity != 0, halt it
+    wfe
+    b       halt
+    # x0 typically points to device tree at entry
+
+setup:
+    # what EL are we running at?
     mrs     tmp, CurrentEL
     cmp     tmp, #(1 << 2)
     beq     cache_disable_el1   // 如果当前处于Exception level 1则跳转到cache_disable_el1
