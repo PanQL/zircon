@@ -1,4 +1,4 @@
-#define HAS_DEVICE_TREE 1
+#define HAS_DEVICE_TREE 0
 
 // FIXME
 static const zbi_platform_id_t platform_id = {
@@ -19,7 +19,8 @@ static const zbi_cpu_config_t cpu_config = {
 static const zbi_mem_range_t mem_config[] = {
     {
         .type = ZBI_MEM_RANGE_RAM,
-        .length = 0x80000000, // 1GB
+        .paddr = 0x80000,
+        .length = 0x30000000, // 1GB
     },
     {
         // memory to reserve to avoid stomping on bootloader data

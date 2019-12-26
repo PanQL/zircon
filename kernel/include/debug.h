@@ -14,7 +14,7 @@
 #include <platform/debug.h>
 
 #if !defined(LK_DEBUGLEVEL)
-#define LK_DEBUGLEVEL 0
+#define LK_DEBUGLEVEL 1
 #endif
 
 /* debug levels */

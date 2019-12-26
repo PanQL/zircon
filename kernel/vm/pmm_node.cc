@@ -14,7 +14,7 @@
 
 #include "vm_priv.h"
 
-#define LOCAL_TRACE MAX(VM_GLOBAL_TRACE, 1)
+#define LOCAL_TRACE MAX(VM_GLOBAL_TRACE, 0)
 
 PmmNode::PmmNode() {
 }

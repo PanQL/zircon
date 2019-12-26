@@ -83,7 +83,7 @@ void lk_main() {
      * global_prng_seed in $zx/kernel/lib/crypto/global_crypto.cc
      */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_TARGET_EARLY, LK_INIT_LEVEL_VM_PREHEAP - 1);
-    dprintf(SPEW, "initializing vm pre-heap\n");
+    dprintf(INFO, "initializing vm pre-heap\n");
     vm_init_preheap();
 
     // bring up the kernel heap
@@ -93,7 +93,7 @@ void lk_main() {
      * version in $zx/kernel/lib/version/version.cc
      */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_VM_PREHEAP, LK_INIT_LEVEL_HEAP - 1);
-    dprintf(SPEW, "initializing heap\n");
+    dprintf(INFO, "initializing heap\n");
     heap_init();
 
     // [0x50000, 0x5ffff]
@@ -102,7 +102,7 @@ void lk_main() {
      * x86_resource_init in $zx/kernel/platform/pc/memory.cc
      */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_HEAP, LK_INIT_LEVEL_VM - 1);
-    dprintf(SPEW, "initializing vm\n");
+    dprintf(INFO, "initializing vm\n");
     vm_init();
 
     // initialize the kernel
@@ -117,7 +117,7 @@ void lk_main() {
      * percpu_heap_init in $zx/kernel/kernel/percpu.cc
      */
     lk_primary_cpu_init_level(LK_INIT_LEVEL_VM, LK_INIT_LEVEL_KERNEL - 1);
-    dprintf(SPEW, "initializing kernel\n");
+    dprintf(INFO, "initializing kernel\n");
     kernel_init();
 
     // [0x70000, 0x7ffff]
@@ -127,7 +127,7 @@ void lk_main() {
     lk_primary_cpu_init_level(LK_INIT_LEVEL_KERNEL, LK_INIT_LEVEL_THREADING - 1);
 
     // create a thread to complete system initialization
-    dprintf(SPEW, "creating bootstrap completion thread\n");
+    dprintf(INFO, "creating bootstrap completion thread\n");
     thread_t* t = thread_create("bootstrap2", &bootstrap2, NULL, DEFAULT_PRIORITY);
     thread_detach(t);
     thread_resume(t);

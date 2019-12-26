@@ -785,13 +785,15 @@ static void arm_resource_dispatcher_init_hook(unsigned int rl) {
         printf("Resources: Failed to initialize MMIO allocator: %d\n", status);
     }
     // Set up IRQs based on values from the GIC
-    status = ResourceDispatcher::InitializeAllocator(ZX_RSRC_KIND_IRQ,
-                                                     interrupt_get_base_vector(),
-                                                     interrupt_get_max_vector());
-    if (status != ZX_OK) {
-        printf("Resources: Failed to initialize IRQ allocator: %d\n", status);
-    }
+    // printf("To initialize IRQ allocator");
+    // status = ResourceDispatcher::InitializeAllocator(ZX_RSRC_KIND_IRQ,
+    //                                                  interrupt_get_base_vector(),
+    //                                                  interrupt_get_max_vector());
+    // if (status != ZX_OK) {
+    //     printf("Resources: Failed to initialize IRQ allocator: %d\n", status);
+    // }
     // Set up SMC valid service call range
+    printf("To initialize SMC allocator");
     status = ResourceDispatcher::InitializeAllocator(ZX_RSRC_KIND_SMC,
                                                      0,
                                                      ARM_SMC_SERVICE_CALL_NUM_MAX + 1);
