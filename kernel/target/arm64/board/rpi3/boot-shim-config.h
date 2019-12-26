@@ -1,4 +1,4 @@
-#define HAS_DEVICE_TREE 0
+#define HAS_DEVICE_TREE 1
 
 // FIXME
 static const zbi_platform_id_t platform_id = {
