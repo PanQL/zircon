@@ -46,8 +46,7 @@ declare_args() {
   enable_user_pci = false
 
   # Extra macro definitions for kernel code, e.g. "DISABLE_KASLR",
-  # "ENABLE_KERNEL_LL_DEBUG".
-  kernel_extra_defines = []
+  kernel_extra_defines = ["ENABLE_KERNEL_LL_DEBUG",]
 }
 
 declare_args() {

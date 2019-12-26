@@ -11,7 +11,7 @@ static const zbi_cpu_config_t cpu_config = {
     .cluster_count = 1,
     .clusters = {
         {
-            .cpu_count = 4,
+            .cpu_count = 1,
         },
     },
 };

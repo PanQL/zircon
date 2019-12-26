@@ -49,7 +49,7 @@ static int mini_uart_pputc(char c){
 }
 
 static int mini_uart_pgetc(){
-    return 1;
+    return mini_uart_getc(false);
 }
 
 static void mini_uart_dputs(const char* str, size_t len,
@@ -90,14 +90,19 @@ static void mini_uart_init_early(const void* driver_data, uint32_t length) {
     uart_base = periph_paddr_to_vaddr(driver->mmio_phys);
     ASSERT(uart_base);
 
-    mini_uart_putc('h');
-    mini_uart_putc('h');
-    mini_uart_putc('h');
-    mini_uart_putc('\n');
-    mini_uart_dputs(ss, 27, false, false);
-    // while(1){}
-
     pdev_register_uart(&uart_ops);
+
+    mini_uart_dputs(ss, 27, false, false);
+    mini_uart_putc('\n');
+    for(int i = 1; i <= 16; i++){
+        char temp = (uart_base >> (64 - i * 4)) & 0xF;
+        if(temp < 10){
+            mini_uart_putc(temp + '0');
+        }else{
+            mini_uart_putc(temp - 10 + 'A');
+        }
+    }
+    mini_uart_putc('\n');
 }
 
 

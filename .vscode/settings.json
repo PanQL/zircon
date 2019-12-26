@@ -18,5 +18,8 @@
             "-clang-tidy",
             "-background-index"
         ],
+        "cstdio": "cpp",
+        "debug.h": "c",
+        "stdio.h": "c"
     }
 }
