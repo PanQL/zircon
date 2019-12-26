@@ -19,7 +19,7 @@
             "-background-index"
         ],
         "cstdio": "cpp",
-        "debug.h": "c",
-        "stdio.h": "c"
+        "debug.h": "cpp",
+        "stdio.h": "cpp"
     }
 }
